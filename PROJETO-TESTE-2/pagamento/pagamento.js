@@ -1,25 +1,21 @@
-// ======================= VERIFICAÇÃO DE LOGIN - NOVO =======================
-
-// ======================= VERIFICAÇÃO DE LOGIN - NOVO =======================
+// ======================= VERIFICAÇÃO DE LOGIN - APRIMORADA =======================
 
 function verificarLoginObrigatorio() {
   const usuario = JSON.parse(localStorage.getItem('usuario'));
   
   if (!usuario) {
-    // Usuário não está logado - redirecionar para login
-    alert('Para finalizar a compra, é necessário fazer login.');
+    // Usuário não está logado - preparar redirecionamento
+    console.log('Usuário não logado, redirecionando para login...');
     
-    // Salvar que veio do pagamento para retornar depois
+    // Salvar dados do carrinho para não perder
+    salvarDadosTemporarios();
+    
+    // Configurar flags de redirecionamento
     localStorage.setItem('paginaAnterior', window.location.href);
     localStorage.setItem('redirecionamentoPagamento', 'true');
     
-    // Garantir que os dados do carrinho não serão perdidos
-    const valorTotal = parseFloat(localStorage.getItem('valorTotal')) || 0;
-    const carrinho = localStorage.getItem('carrinho');
-    
-    // Salva cópia dos dados temporariamente
-    if (valorTotal > 0) localStorage.setItem('valorTotalTemp', valorTotal.toString());
-    if (carrinho) localStorage.setItem('carrinhoTemp', carrinho);
+    // Informar ao usuário
+    alert('Para finalizar a compra, é necessário fazer login.');
     
     // Redirecionar para login
     window.location.href = '../../LOGIN/login.html';
@@ -29,212 +25,249 @@ function verificarLoginObrigatorio() {
   return true;
 }
 
-// ======================= CÓDIGO ORIGINAL =======================
-
-// Quando todo o conteúdo da página estiver carregado
-document.addEventListener("DOMContentLoaded", () => {
-  // Verifica se há dados temporários e restaura eles
-  if (localStorage.getItem('valorTotalTemp')) {
-    localStorage.setItem('valorTotal', localStorage.getItem('valorTotalTemp'));
-    localStorage.removeItem('valorTotalTemp');
+function salvarDadosTemporarios() {
+  // Salva valor total temporariamente
+  const valorTotal = parseFloat(localStorage.getItem('valorTotal')) || 0;
+  if (valorTotal > 0) {
+    localStorage.setItem('valorTotalTemp', valorTotal.toString());
+    console.log('Valor total salvo temporariamente:', valorTotal);
   }
   
-  if (localStorage.getItem('carrinhoTemp')) {
-    localStorage.setItem('carrinho', localStorage.getItem('carrinhoTemp'));
-    localStorage.removeItem('carrinhoTemp');
-  }
-
-  // Recupera o valor total da compra salvo no localStorage (ou 0 se não houver)
-  const total = parseFloat(localStorage.getItem('valorTotal')) || 0;
-
-  // Exibe esse valor no elemento com o ID 'resumoPagamento'
-  document.getElementById('resumoPagamento').textContent = `Total: R$ ${total.toFixed(2)}`;
-
-  // Verificar se o usuário chegou aqui após fazer login
-  const redirecionamentoPagamento = localStorage.getItem('redirecionamentoPagamento');
-  if (redirecionamentoPagamento) {
-    // Remove a flag de redirecionamento
-    localStorage.removeItem('redirecionamentoPagamento');
-    
-    // Mostra mensagem de boas-vindas
-    const usuario = JSON.parse(localStorage.getItem('usuario'));
-    if (usuario) {
-      alert(`Bem-vindo de volta, ${usuario.nome}! Agora você pode finalizar sua compra.`);
-    }
-  }
-  verificarUsuario(); // <-- ADICIONE AQUI
-});
-
-// ======================= CÓDIGO ORIGINAL =======================
-
-// Quando todo o conteúdo da página estiver carregado
-document.addEventListener("DOMContentLoaded", () => {
-  // Verifica se há dados temporários e restaura eles
-  if (localStorage.getItem('valorTotalTemp')) {
-    localStorage.setItem('valorTotal', localStorage.getItem('valorTotalTemp'));
-    localStorage.removeItem('valorTotalTemp');
-  }
-  
-  if (localStorage.getItem('carrinhoTemp')) {
-    localStorage.setItem('carrinho', localStorage.getItem('carrinhoTemp'));
-    localStorage.removeItem('carrinhoTemp');
-  }
-
-  // Recupera o valor total da compra salvo no localStorage (ou 0 se não houver)
-  const total = parseFloat(localStorage.getItem('valorTotal')) || 0;
-
-  // Exibe esse valor no elemento com o ID 'resumoPagamento'
-  document.getElementById('resumoPagamento').textContent = `Total: R$ ${total.toFixed(2)}`;
-
-  // Verificar se o usuário chegou aqui após fazer login
-  const redirecionamentoPagamento = localStorage.getItem('redirecionamentoPagamento');
-  if (redirecionamentoPagamento) {
-    // Remove a flag de redirecionamento
-    localStorage.removeItem('redirecionamentoPagamento');
-    
-    // Mostra mensagem de boas-vindas
-    const usuario = JSON.parse(localStorage.getItem('usuario'));
-    if (usuario) {
-      alert(`Bem-vindo de volta, ${usuario.nome}! Agora você pode finalizar sua compra.`);
-    }
-  }
-  verificarUsuario(); // <-- ADICIONE AQUI
-});
-
-// Função chamada quando o usuário escolhe uma forma de pagamento
-function verificarPagamento() {
-  const forma = document.getElementById("formaPagamento").value; // Pega o valor selecionado
-
-  // Se o usuário escolher Pix, chama a função que gera o QR Code
-  if (forma === "Pix") {
-    pagarPIX();
-  } else {
-    // Se for outra forma de pagamento, esconde o QR Code e limpa o conteúdo
-    document.getElementById("qrcode-area").style.display = "none";
-    document.getElementById("qrcode").innerHTML = "";
+  // Salva carrinho temporariamente
+  const carrinho = localStorage.getItem('carrinho');
+  if (carrinho) {
+    localStorage.setItem('carrinhoTemp', carrinho);
+    console.log('Carrinho salvo temporariamente');
   }
 }
 
-// Função para gerar o QR Code Pix
-function pagarPIX() {
-  const forma = document.getElementById("formaPagamento").value; // Confirma a forma de pagamento
+// ======================= INICIALIZAÇÃO DA PÁGINA =======================
 
-  // Verifica se é realmente Pix
+document.addEventListener("DOMContentLoaded", () => {
+  console.log('Página de pagamento carregada');
+  
+  // Restaura dados se necessário
+  restaurarDadosSeNecessario();
+  
+  // Exibe o resumo do pagamento
+  exibirResumoPagamento();
+  
+  // Verifica se usuário acabou de fazer login
+  verificarLoginRecente();
+  
+  // Atualiza interface do usuário
+  verificarUsuario();
+});
+
+function restaurarDadosSeNecessario() {
+  // Verifica se há dados temporários e restaura
+  const valorTemp = localStorage.getItem('valorTotalTemp');
+  const carrinhoTemp = localStorage.getItem('carrinhoTemp');
+  
+  if (valorTemp) {
+    localStorage.setItem('valorTotal', valorTemp);
+    localStorage.removeItem('valorTotalTemp');
+    console.log('Valor total restaurado da sessão temporária:', valorTemp);
+  }
+  
+  if (carrinhoTemp) {
+    localStorage.setItem('carrinho', carrinhoTemp);
+    localStorage.removeItem('carrinhoTemp');
+    console.log('Carrinho restaurado da sessão temporária');
+  }
+}
+
+function exibirResumoPagamento() {
+  // Recupera o valor total da compra
+  const total = parseFloat(localStorage.getItem('valorTotal')) || 0;
+  
+  // Exibe no elemento de resumo
+  const resumoElement = document.getElementById('resumoPagamento');
+  if (resumoElement) {
+    resumoElement.textContent = `Total: R$ ${total.toFixed(2)}`;
+  }
+  
+  console.log('Resumo do pagamento exibido:', total);
+}
+
+function verificarLoginRecente() {
+  // Verifica se o usuário acabou de fazer login
+  const redirecionamentoPagamento = localStorage.getItem('redirecionamentoPagamento');
+  
+  if (redirecionamentoPagamento === 'true') {
+    // Remove a flag
+    localStorage.removeItem('redirecionamentoPagamento');
+    localStorage.removeItem('paginaAnterior');
+    
+    // Mostra mensagem de boas-vindas
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    if (usuario) {
+      alert(`Bem-vindo de volta, ${usuario.nome}! Agora você pode finalizar sua compra.`);
+      console.log('Usuário retornou após login:', usuario.nome);
+    }
+  }
+}
+
+// ======================= FUNÇÕES DE PAGAMENTO =======================
+
+function verificarPagamento() {
+  const forma = document.getElementById("formaPagamento").value;
+
+  if (forma === "Pix") {
+    pagarPIX();
+  } else {
+    // Esconde área do QR Code para outras formas de pagamento
+    const qrcodeArea = document.getElementById("qrcode-area");
+    const qrcodeDiv = document.getElementById("qrcode");
+    
+    if (qrcodeArea) qrcodeArea.style.display = "none";
+    if (qrcodeDiv) qrcodeDiv.innerHTML = "";
+  }
+}
+
+function pagarPIX() {
+  const forma = document.getElementById("formaPagamento").value;
+
   if (forma !== "Pix") {
     alert("Selecione a forma de pagamento como Pix para gerar o QR Code.");
-    return; // Para a função se não for Pix
+    return;
   }
 
-  // Recupera o valor total da compra
   const valor = parseFloat(localStorage.getItem('valorTotal')) || 0;
 
   // Dados do recebedor
-  const chavePix = '73378690968'; // Chave Pix do vendedor
+  const chavePix = '73378690968';
   const nomeRecebedor = 'KAUAN SCHULHAN ';
   const cidade = 'SAO PAULO';
-  const descricao = 'Pagamento  LojaDeTenis'; // Descrição opcional do pagamento
+  const descricao = 'Pagamento LojaDeTenis';
 
-  // Função auxiliar que formata os campos do padrão Pix (ID, tamanho, valor)
+  // Função auxiliar para formatação
   function format(id, value) {
-    const size = value.length.toString().padStart(2, '0'); // Tamanho do valor em dois dígitos
-    return `${id}${size}${value}`; // Retorna o campo formatado
+    const size = value.length.toString().padStart(2, '0');
+    return `${id}${size}${value}`;
   }
 
-  // Monta as informações da conta do recebedor conforme padrão Pix
-  const merchantAccount = format("00", "BR.GOV.BCB.PIX") + // Identificador Pix
-                          format("01", chavePix) +          // Chave Pix
-                          format("02", descricao);          // Descrição do pagamento
+  // Monta informações da conta
+  const merchantAccount = format("00", "BR.GOV.BCB.PIX") +
+                          format("01", chavePix) +
+                          format("02", descricao);
 
-  // Monta o payload Pix (código a ser convertido em QR Code), ainda sem o CRC final
+  // Monta payload sem CRC
   const payloadSemCRC =
-    format("00", "01") + // Indicador de formato fixo
-    format("26", merchantAccount) + // Informações da conta
-    format("52", "0000") + // Categoria do comerciante (0000 = genérico)
-    format("53", "986") + // Código da moeda (986 = BRL)
-    format("54", valor.toFixed(2)) + // Valor formatado com duas casas
-    format("58", "BR") + // País
-    format("59", nomeRecebedor) + // Nome do recebedor
-    format("60", cidade) + // Cidade
-    format("62", format("05", "***")) + // Campo adicional opcional
-    "6304"; // Início do campo de CRC (verificação)
+    format("00", "01") +
+    format("26", merchantAccount) +
+    format("52", "0000") +
+    format("53", "986") +
+    format("54", valor.toFixed(2)) +
+    format("58", "BR") +
+    format("59", nomeRecebedor) +
+    format("60", cidade) +
+    format("62", format("05", "***")) +
+    "6304";
 
-  // Função que calcula o CRC16 (checksum exigido pelo padrão Pix)
+  // Função CRC16
   function crc16(str) {
-    let crc = 0xFFFF; // Valor inicial padrão
+    let crc = 0xFFFF;
     for (let i = 0; i < str.length; i++) {
-      crc ^= str.charCodeAt(i) << 8; // Aplica XOR no byte atual
+      crc ^= str.charCodeAt(i) << 8;
       for (let j = 0; j < 8; j++) {
-        // Aplica a operação de shift e XOR conforme o algoritmo CRC16-CCITT
         if ((crc & 0x8000) !== 0) {
           crc = (crc << 1) ^ 0x1021;
         } else {
           crc <<= 1;
         }
-        crc &= 0xFFFF; // Garante que fique em 16 bits
+        crc &= 0xFFFF;
       }
     }
-    return crc.toString(16).toUpperCase().padStart(4, '0'); // Retorna em hexadecimal com 4 dígitos
+    return crc.toString(16).toUpperCase().padStart(4, '0');
   }
 
-  // Junta o payload com o CRC calculado para gerar o código final
+  // Payload completo
   const payloadCompleto = payloadSemCRC + crc16(payloadSemCRC);
 
-  // Seleciona a div onde o QR Code será exibido
+  // Gera QR Code
   const qrCodeDiv = document.getElementById("qrcode");
-  qrCodeDiv.innerHTML = ''; // Limpa qualquer conteúdo anterior (ex: um QR anterior)
+  const qrcodeArea = document.getElementById("qrcode-area");
+  
+  if (qrCodeDiv) {
+    qrCodeDiv.innerHTML = '';
+    
+    if (qrcodeArea) {
+      qrcodeArea.style.display = "block";
+    }
 
-  // Torna a área do QR Code visível
-  document.getElementById("qrcode-area").style.display = "block";
+    new QRCode(qrCodeDiv, {
+      text: payloadCompleto,
+      width: 250,
+      height: 250,
+      colorDark: "#000000",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.H
+    });
 
-  // Usa a biblioteca QRCode.js para gerar o QR Code com o payload Pix
-  new QRCode(qrCodeDiv, {
-    text: payloadCompleto, // Texto que será convertido no QR Code
-    width: 250,            // Largura do QR Code
-    height: 250,           // Altura
-    colorDark: "#000000",  // Cor do QR
-    colorLight: "#ffffff", // Cor de fundo
-    correctLevel: QRCode.CorrectLevel.H // Nível de correção de erros (H = alta)
-  });
-
-  // Cria uma div abaixo do QR com informações adicionais do pagamento
-  const info = document.createElement("div");
-  info.className = "nome-valor"; // Classe para estilização
-  info.innerHTML = `
-    <p><strong>Nome:</strong> ${nomeRecebedor}</p>
-    <p><strong>CPF/CNPJ (PIX):</strong> ${chavePix}</p>
-    <p><strong>Valor:</strong> R$ ${valor.toFixed(2)}</p>
-  `;
-  qrCodeDiv.appendChild(info); // Adiciona as informações abaixo do QR Code
+    // Adiciona informações
+    const info = document.createElement("div");
+    info.className = "nome-valor";
+    info.innerHTML = `
+      <p><strong>Nome:</strong> ${nomeRecebedor}</p>
+      <p><strong>CPF/CNPJ (PIX):</strong> ${chavePix}</p>
+      <p><strong>Valor:</strong> R$ ${valor.toFixed(2)}</p>
+    `;
+    qrCodeDiv.appendChild(info);
+  }
 }
 
-// ======================= FUNÇÃO MODIFICADA - VERIFICAÇÃO OBRIGATÓRIA =======================
+// ======================= FINALIZAÇÃO DA COMPRA - APRIMORADA =======================
 
-
-// Função chamada quando o usuário clica em "Finalizar"
 function finalizarCompra() {
-  // NOVA VERIFICAÇÃO OBRIGATÓRIA DE LOGIN
+  console.log('Tentativa de finalizar compra...');
+  
+  // Verificação obrigatória de login
   if (!verificarLoginObrigatorio()) {
-    return; // Para a execução se não estiver logado
+    return;
   }
 
-  // Recuperar dados do usuário para personalizar a mensagem
+  // Verifica se há uma forma de pagamento selecionada
+  const formaPagamento = document.getElementById("formaPagamento").value;
+  if (!formaPagamento || formaPagamento === "Escolha sua forma de pagamento") {
+    alert("Por favor, selecione uma forma de pagamento antes de finalizar.");
+    return;
+  }
+
+  // Verifica se há valor no carrinho
+  const valorTotal = parseFloat(localStorage.getItem('valorTotal')) || 0;
+  if (valorTotal <= 0) {
+    alert("Não há itens no carrinho para finalizar a compra.");
+    return;
+  }
+
+  // Recupera dados do usuário
   const usuario = JSON.parse(localStorage.getItem('usuario'));
   const nomeUsuario = usuario ? usuario.nome : 'Cliente';
 
-  // Mostra mensagem de agradecimento personalizada
-  alert(`Compra finalizada com sucesso, ${nomeUsuario}! Obrigado pela preferência, volte sempre!`);
+  // Confirma a finalização
+  const confirmar = confirm(`Finalizar compra no valor de R$ ${valorTotal.toFixed(2)} via ${formaPagamento}?`);
+  
+  if (confirmar) {
+    // Mensagem de sucesso personalizada
+    alert(`Compra finalizada com sucesso, ${nomeUsuario}! Obrigado pela preferência, volte sempre!`);
 
-  // Limpa o carrinho e o valor total salvos no localStorage
-  localStorage.removeItem("carrinho");
-  localStorage.removeItem('valorTotal');
+    // Limpa dados do carrinho
+    localStorage.removeItem("carrinho");
+    localStorage.removeItem('valorTotal');
+    
+    // Limpa possíveis dados temporários
+    localStorage.removeItem('valorTotalTemp');
+    localStorage.removeItem('carrinhoTemp');
 
-  // Redireciona o usuário de volta para a loja (corrigido de pagamento.html para loja.html)
-  window.location.href = '../loja/loja.html';
+    console.log('Compra finalizada, redirecionando para loja...');
+    
+    // Redireciona para a loja
+    window.location.href = '../loja/loja.html';
+  }
 }
 
-
-
-/// ======================= LOGIN: EXIBIÇÃO E CONTROLE DO BOTÃO =======================
+// ======================= CONTROLE DE LOGIN NA INTERFACE =======================
 
 function verificarUsuario() {
   const usuario = JSON.parse(localStorage.getItem('usuario'));
@@ -266,7 +299,6 @@ function atualizarBotaoLogin(usuario) {
   }
 }
 
-
 function gerenciarLogin() {
   const usuario = JSON.parse(localStorage.getItem('usuario'));
 
@@ -276,6 +308,7 @@ function gerenciarLogin() {
       logout();
     }
   } else {
+    // Salva a página atual como anterior
     localStorage.setItem('paginaAnterior', window.location.href);
     window.location.href = '../../LOGIN/login.html';
   }

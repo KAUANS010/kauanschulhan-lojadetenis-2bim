@@ -9,12 +9,25 @@
 <body>
   <div class="login-container">
     <h2>Login</h2>
+    
+    <!-- Mensagem de aviso quando vem do pagamento -->
+    <div id="aviso-pagamento" style="display: none; background: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; margin-bottom: 15px; border-radius: 5px; color: #856404;">
+      <strong>⚠️ Atenção:</strong> Para finalizar sua compra, é necessário fazer login primeiro.
+    </div>
+    
     <form id="form-login">
       <input type="email" id="email" placeholder="Email" required />
       <input type="password" id="senha" placeholder="Senha" required />
       <button type="submit">Entrar</button>
     </form>
     <p>Não tem conta? <a href="../cadastro/cadastro.html">Cadastre-se</a></p>
+    
+    <!-- Botão para voltar (aparece apenas quando vem do pagamento) -->
+    <div id="botao-voltar" style="display: none; margin-top: 15px;">
+      <button type="button" onclick="voltarPagamento()" style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+        ← Voltar ao Pagamento
+      </button>
+    </div>
   </div>
 
   <script src="../LOGIN/loja.js"></script>
