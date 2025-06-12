@@ -1,0 +1,216 @@
+/* Fundo com animação */
+body {
+  font-family: Arial, sans-serif;               /* Define a fonte usada no corpo da página */
+  margin: 0;                                    /* Remove as margens padrão */
+  padding: 0;                                   /* Remove os preenchimentos padrão */
+  background: linear-gradient(-45deg,           /* Define um fundo com gradiente em diagonal */
+    #0f2027, #203a43, #2c5364, #1a2980);
+  background-size: 400% 400%;                   /* Aumenta o tamanho do fundo para criar efeito animado */
+  animation: gradientBG 15s ease infinite;      /* Aplica a animação do fundo */
+  color: #2c3e50;                               /* Cor padrão do texto */
+  display: flex;                                /* Usa flexbox no corpo */
+  flex-direction: column;                       /* Elementos em coluna */
+  min-height: 100vh;                            /* Altura mínima da página é a altura da tela */
+}
+
+/* Título principal */
+header {
+  padding: 30px 20px 10px;                      /* Espaçamento interno (superior, lateral, inferior) */
+  text-align: center;                           /* Centraliza o conteúdo */
+}
+
+header h2 {
+  font-size: 2.8rem;                            /* Tamanho grande para o título */
+  color: #ffffff;                               /* Título branco */
+  font-weight: bold;                            /* Negrito */
+  font-family: 'Tagesschrift', system-ui;       /* Fonte personalizada com fallback */
+  margin: 0;                                    /* Remove margem padrão */
+}
+
+/* Caixa central com conteúdo */
+main {
+  background-color: #ffffff;                    /* Fundo branco */
+  max-width: 700px;                             /* Largura máxima da caixa */
+  margin: 20px auto;                            /* Centraliza e dá espaço externo vertical */
+  padding: 30px 40px;                           /* Espaçamento interno */
+  border-radius: 12px;                          /* Cantos arredondados */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);    /* Sombra suave ao redor da caixa */
+}
+
+label {
+  font-size: 1.1rem;                            /* Tamanho da fonte das labels */
+  color: #083b6e;                               /* Cor azul escuro */
+  display: block;                               /* Mostra como bloco (em nova linha) */
+  margin: 16px 0 6px;                           /* Espaçamento externo */
+}
+
+select {
+  width: 100%;                                  /* Largura total */
+  padding: 12px;                                /* Espaço interno */
+  border-radius: 6px;                           /* Cantos arredondados */
+  font-size: 1rem;                              /* Tamanho da fonte */
+  border: 1px solid #ccc;                       /* Borda cinza clara */
+  background-color: #e2e3e4;                    /* Cor de fundo clara */
+}
+
+/* Resumo de pagamento */
+#resumoPagamento {
+  background-color: #ecf0f1;                    /* Fundo cinza claro */
+  padding: 20px;                                /* Espaçamento interno */
+  border-left: 8px solid #3498db;               /* Borda azul à esquerda como destaque */
+  border-radius: 8px;                           /* Cantos arredondados */
+  font-size: 1.3rem;                            /* Tamanho da fonte */
+  font-weight: bold;                            /* Negrito */
+  color: #2c3e50;                               /* Cor do texto */
+  margin-bottom: 20px;                          /* Espaço inferior */
+}
+
+/* Botões */
+.botao {
+  background-color: #3498db;                    /* Azul vibrante */
+  color: white;                                 /* Texto branco */
+  border: none;                                 /* Sem borda */
+  padding: 12px 25px;                           /* Espaço interno */
+  border-radius: 8px;                           /* Cantos arredondados */
+  font-size: 16px;                              /* Tamanho do texto */
+  cursor: pointer;                              /* Cursor de clique */
+  margin: 20px 10px 0 0;                        /* Espaço externo */
+  transition: background-color 0.3s ease,       /* Transição suave de cor */
+              transform 0.2s ease;              /* Transição suave de escala */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);      /* Sombra leve */
+}
+
+.botao:hover {
+  background-color: #1c5980;                    /* Azul escuro ao passar o mouse */
+  transform: scale(1.03);                       /* Aumenta um pouco o tamanho */
+}
+
+/* Nome e valor de produtos */
+.nome-valor p {
+  margin: 8px 0;                                /* Espaço vertical entre parágrafos */
+  font-size: 15px;                              /* Tamanho do texto */
+  color: #333;                                  /* Cor escura */
+}
+
+/* Mensagem final de confirmação */
+.mensagem-final {
+  margin-top: 30px;                             /* Espaço acima */
+  font-size: 20px;                              /* Texto grande */
+  color: #27ae60;                               /* Verde de sucesso */
+  font-weight: bold;                            /* Negrito */
+  text-align: center;                           /* Centralizado */
+}
+
+/* Rodapé */
+footer {
+  text-align: center;                           /* Centraliza texto */
+  margin-top: auto;                             /* Empurra o rodapé para o fim da página */
+  padding: 20px;                                /* Espaço interno */
+  color: #cccccc;                               /* Cor cinza clara */
+  font-size: 0.9rem;                            /* Tamanho pequeno */
+}
+
+/* Botão flutuante no canto inferior direito */
+.botao-voltar {
+  position: fixed;                              /* Fixa na tela */
+  bottom: 20px;                                 /* Distância da base */
+  right: 20px;                                  /* Distância da lateral */
+  background-color: #1c5980;                    /* Cor de fundo azul escuro */
+  color: white;                                 /* Texto branco */
+  padding: 10px 14px;                           /* Espaço interno */
+  font-size: 13px;                              /* Tamanho pequeno */
+  border: none;                                 /* Sem borda */
+  border-radius: 50px;                          /* Arredondado como uma pílula */
+  text-decoration: none;                        /* Remove sublinhado */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);      /* Sombra suave */
+  transition: background-color 0.3s ease;       /* Transição ao passar o mouse */
+  z-index: 999;                                 /* Garante que fique acima de outros elementos */
+}
+
+.botao-voltar:hover {
+  background-color: #163f5c;                    /* Cor de fundo mais escura ao passar o mouse */
+}
+
+/* Animação do fundo da página */
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;                /* Posição inicial do fundo */
+  }
+  50% {
+    background-position: 100% 50%;              /* Meio da animação: fundo se move horizontalmente */
+  }
+  100% {
+    background-position: 0% 50%;                /* Volta à posição inicial */
+  }
+}
+
+/* Barra de acesso rápido com ícones flutuantes */
+.barra-acesso {
+  position: fixed;                              /* Fixa na tela */
+  right: 20px;                                  /* Distância da direita */
+  bottom: 80px;                                 /* Um pouco acima do botão flutuante */
+  display: flex;                                /* Usa flexbox */
+  flex-direction: column;                       /* Organiza os ícones em coluna */
+  gap: 10px;                                     /* Espaço entre os ícones */
+  z-index: 999;                                 /* Fica acima de outros elementos */
+}
+
+.barra-acesso a {
+  color: white;                                 /* Ícones brancos */
+  text-decoration: none;                        /* Remove sublinhado */
+  font-size: 22px;                              /* Tamanho grande para ícones */
+  padding: 12px;                                /* Espaçamento interno */
+  border-radius: 50%;                           /* Deixa os botões redondos */
+  text-align: center;                           /* Centraliza o conteúdo */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);      /* Sombra leve */
+  transition: background-color 0.3s ease;       /* Transição suave de cor */
+}
+
+.barra-acesso a:hover {
+  background-color: #13206d;                    /* Cor de fundo ao passar o mouse */
+}
+
+
+
+/* Área de Login */
+.login-area {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1001;
+}
+
+.botao-login {
+  background: linear-gradient(135deg, #3498db, #7f8c8d);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 100px;
+  justify-content: center;
+}
+
+.botao-login:hover {
+  background: linear-gradient(135deg, #2980b9, #95a5a6);
+  transform: translateY(-2px);
+}
+
+.botao-login:active {
+  transform: translateY(0);
+}
+
+.botao-login.logado {
+  background: linear-gradient(135deg, #27ae60, #7f8c8d);
+}
+
+.botao-login.logado:hover {
+  background: linear-gradient(135deg, #2ecc71, #95a5a6);
+}

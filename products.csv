@@ -1,0 +1,13 @@
+id,name,price,img,quantity,features
+1,Tênis 1,199.9,../loja/imagens/tenis1.jpg,10,Confortável|Leve|Resistente
+2,Tênis 2,219.9,../loja/imagens/tenis2.jpg,10,Design moderno|Amortecimento|Durável
+3,Tênis 3,179.9,../loja/imagens/tenis3.jpg,10,Esportivo|Respirável|Antiderrapante
+4,Tênis 4,189.9,../loja/imagens/tenis4.jpg,10,Casual|Estilo urbano|Leve
+5,Tênis 5,249.9,../loja/imagens/tenis5.jpg,10,Alta performance|Ventilado|Solado flexível
+6,Tênis 6,199.9,../loja/imagens/tenis6.jpg,10,Casual e leve|Estampa exclusiva|Solado em borracha
+7,Tênis 7,209.9,../loja/imagens/tenis7.jpg,10,Design futurista|Ajuste anatômico|Estabilidade
+8,Tênis 8,229.9,../loja/imagens/tenis8.jpg,10,Para dia-dia|Ultra leve|Confortável
+9,Tênis 9,239.9,../loja/imagens/tenis9.jpg,10,Resistente à água|Leveza extrema|Design exclusivo
+10,Tênis 10,259.9,../loja/imagens/tenis10.jpg,10,Para dia-dia|Super aderente|Alta resistência
+12,Tênis 12,219.9,../loja/imagens/tenis12.jpg,10,Estilos|Moderno|Resistente
+14,tênis 11,250,../loja/imagens/tenis11.jpg,1,Confortável|Macio|Atraente

@@ -1,0 +1,279 @@
+:root {
+  --primary-color: #1a4d7a;
+  --primary-dark: #163f5c;
+  --primary-light: #2980b9;
+  --secondary-color: #f0f3f5;
+  --text-dark: #1a1a1a;
+  --text-light: #ffffff;
+  --text-gray: #333333;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+  color: var(--text-light);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+h1, h2 {
+  font-family: "Tagesschrift", system-ui;
+  font-weight: 400;
+  color: var(--text-light);
+  text-align: center;
+  margin: 30px 0;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+  font-size: 2.5rem;
+  letter-spacing: 1px;
+}
+
+h2 {
+  font-size: 2rem;
+  margin-bottom: 40px;
+}
+
+main {
+  padding: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+#carrinho {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+  box-sizing: border-box;
+}
+
+.card {
+  background-color: var(--secondary-color);
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  color: var(--text-dark);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.card img {
+  width: 100%;
+  height: 200px;
+  object-fit: contain;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  transition: var(--transition);
+}
+
+.card:hover img {
+  transform: scale(1.03);
+}
+
+.card h3 {
+  margin: 10px 0;
+  font-size: 1.3rem;
+  color: var(--primary-dark);
+}
+
+.card p {
+  margin: 8px 0;
+  font-size: 0.95rem;
+  color: var(--text-gray);
+}
+
+.card p strong {
+  color: var(--text-dark);
+}
+
+.remover-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 15px;
+  transition: var(--transition);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  align-self: center;
+  width: 100%;
+}
+
+.remover-btn:hover {
+  background-color: #c0392b;
+  transform: translateY(-2px);
+}
+
+/* Barra de acesso rápido */
+.barra-acesso {
+  position: fixed;
+  right: 25px;
+  bottom: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 999;
+}
+
+.barra-acesso a {
+  color: var(--text-light);
+  text-decoration: none;
+  font-size: 24px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  text-align: center;
+  box-shadow: var(--shadow);
+  background-color: var(--primary-color);
+  transition: var(--transition);
+}
+
+.barra-acesso a:hover {
+  background-color: var(--primary-dark);
+  transform: scale(1.1);
+}
+
+/* Animação de fundo */
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Botão de pagamento */
+#botao-pagamento {
+  display: block;
+  margin: 40px auto;
+  background-color: var(--primary-color);
+  color: var(--text-light);
+  border: none;
+  padding: 14px 24px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: var(--transition);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: var(--shadow);
+}
+
+#botao-pagamento:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-3px);
+}
+
+/* Mensagem de carrinho vazio */
+#carrinho > p {
+  text-align: center;
+  font-size: 1.2rem;
+  grid-column: 1 / -1;
+  padding: 40px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  backdrop-filter: blur(5px);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  main {
+    padding: 20px;
+  }
+  
+  h1 {
+    font-size: 2rem;
+  }
+  
+  h2 {
+    font-size: 1.6rem;
+    margin-bottom: 30px;
+  }
+  
+  #carrinho {
+    grid-template-columns: 1fr;
+  }
+  
+  .barra-acesso {
+    right: 15px;
+    bottom: 15px;
+  }
+  
+  .barra-acesso a {
+    width: 45px;
+    height: 45px;
+    font-size: 22px;
+  }
+  
+  #botao-pagamento {
+    width: 90%;
+    padding: 12px;
+    font-size: 1rem;
+  }
+}
+
+
+.login-area {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1001;
+}
+
+.botao-login {
+  background: linear-gradient(135deg, #3498db, #7f8c8d);
+  color: var(--text-light);
+  border: none;
+  padding: 12px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.95rem;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 100px;
+  justify-content: center;
+}
+
+.botao-login:hover {
+  background: linear-gradient(135deg, #2980b9, #95a5a6);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.botao-login:active {
+  transform: translateY(0);
+}
+
+.botao-login.logado {
+  background: linear-gradient(135deg, #27ae60, #7f8c8d);
+}
+
+.botao-login.logado:hover {
+  background: linear-gradient(135deg, #2ecc71, #95a5a6);
+}

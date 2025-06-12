@@ -1,0 +1,44 @@
+body {
+  background-color: #f0f3f5;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+input, button {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+button {
+  background-color: #2980b9;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #1c5980;
+}
+
+.botao-voltar {
+  display: inline-block;
+  margin-top: 20px;
+  text-decoration: none;
+  background: #ccc;
+  padding: 8px 12px;
+  border-radius: 6px;
+  color: black;
+}

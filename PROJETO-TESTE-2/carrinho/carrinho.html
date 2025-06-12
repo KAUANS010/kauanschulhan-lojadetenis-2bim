@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<!-- Define que este é um documento HTML5 -->
+
+<html lang="pt-BR">
+<!-- Início do documento HTML com idioma definido como português do Brasil -->
+
+<head>
+  <meta charset="UTF-8">
+  <!-- Define a codificação de caracteres como UTF-8 (permite acentos, por exemplo) -->
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Garante que o site seja responsivo em dispositivos móveis -->
+
+  <title>Carrinho - Loja de Tênis </title>
+  <!-- Título da aba do navegador -->
+
+  <link rel="stylesheet" href="./carrinho.css">
+  <!-- Importa o arquivo CSS com os estilos da página -->
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <!-- Inicia uma conexão antecipada com o servidor do Google Fonts (melhora o desempenho) -->
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Conexão antecipada com outro servidor do Google Fonts (com permissão de compartilhamento cruzado) -->
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Tagesschrift&display=swap"
+    rel="stylesheet">
+  <!-- Importa as fontes "Open Sans" e "Tagesschrift" do Google Fonts -->
+</head>
+
+<body>
+  <!-- Corpo da página: tudo o que aparece visualmente no navegador -->
+
+  <h1>Carrinho - Loja de Tênis </h1>
+  <!-- Título principal da página -->
+
+  <h2>Itens no Carrinho</h2>
+  <!-- Subtítulo indicando o conteúdo abaixo -->
+
+
+
+  <!-- Área de Login -->
+  <div class="login-area">
+    <button id="botao-login" class="botao-login" onclick="gerenciarLogin()">
+      <span id="login-icone">🔐</span>
+      <span id="login-texto">Login</span>
+    </button>
+  </div>
+
+
+
+
+
+  <main>
+    <!-- Área principal do conteúdo da página -->
+
+    <section id="carrinho"></section>
+    <!-- Seção com ID "carrinho" onde os itens serão inseridos via JavaScript -->
+  </main>
+
+  <script src="../carrinho/carrinho.js""></script>
+  <!-- Importa o arquivo JavaScript que gerencia os itens do carrinho -->
+
+  <div class=" barra-acesso">
+    <!-- Barra flutuante de acesso rápido -->
+
+  <a href="../loja/loja.html" title="Loja">👟</a>
+  <!-- Botão para voltar à loja, com ícone de tênis -->
+
+  <a href="../carrinho/carrinho.html" title="Carrinho">🛒</a>
+  <!-- Botão para a página do carrinho, com ícone de carrinho -->
+
+  <a href="../pagamento/pagamento.html" title="Pagamento">💸</a>
+  <!-- Botão para ir à página de pagamento, com ícone de dinheiro -->
+
+  </div>
+
+  <script src="../loja/loja.js"></script> <!--funções do login -->
+
+  <script>
+    window.onload = function () {
+      verificarUsuario();
+    };
+  </script>
+
+
+
+</body>
+
+</html>
+<!-- Fim do documento HTML -->

@@ -1,0 +1,108 @@
+body {
+  background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #1a2980);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+  font-family: "Open Sans", Arial, sans-serif;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.login-container {
+  background: rgba(44, 83, 100, 0.85);
+  backdrop-filter: blur(8px);
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  width: 350px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.login-container h2 {
+  font-family: "Tagesschrift", system-ui;
+  font-weight: 400;
+  margin-bottom: 30px;
+  font-size: 28px;
+  color: #fff;
+}
+
+.login-container input {
+  width: 100%;
+  padding: 12px 15px;
+  margin: 12px 0;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.login-container input:focus {
+  outline: none;
+  background: white;
+  box-shadow: 0 0 0 2px #2980b9;
+}
+
+.login-container button {
+  padding: 12px 24px;
+  background-color: #2980b9;
+  border: none;
+  color: white;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 15px;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.login-container button:hover {
+  background-color: #1c5980;
+  transform: translateY(-2px);
+}
+
+.login-container a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  display: inline-block;
+  margin-top: 20px;
+  transition: color 0.3s ease;
+}
+
+.login-container a:hover {
+  color: white;
+  text-decoration: underline;
+}
+
+.login-footer {
+  margin-top: 30px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Adicionando responsividade */
+@media (max-width: 480px) {
+  .login-container {
+    width: 90%;
+    padding: 30px 20px;
+  }
+}

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gerenciar Produtos</title>
+  <link rel="stylesheet" href="../gerente-produto/produto.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Gestão de Produtos</h2>
+
+    <input type="text" id="busca" placeholder="Buscar por nome..." />
+    <button onclick="buscarProduto()">Buscar</button>
+
+    <div id="resultado-produto"></div>
+
+    <h3>Adicionar ou Atualizar Produto</h3>
+    <form id="form-produto">
+      <input type="hidden" id="produto-id" />
+      <input type="text" id="nome" placeholder="Nome" required />
+      <input type="number" id="preco" placeholder="Preço" required />
+      <input type="text" id="img" placeholder="URL da imagem" required />
+      <input type="number" id="quantidade" placeholder="Quantidade" required />
+      <input type="text" id="features" placeholder="Descrição (separada por |)" />
+      <button type="submit">Salvar Produto</button>
+    </form>
+
+    <a href="../loja.html" class="botao-voltar">← Voltar à loja</a>
+  </div>
+
+  <script src="../gerente-produto/produto.js"></script>
+</body>
+</html>
