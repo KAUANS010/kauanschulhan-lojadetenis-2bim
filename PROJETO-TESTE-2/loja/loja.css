@@ -239,29 +239,31 @@ h2 {
   100% { background-position: 0% 50%; }
 }
 
+/* No arquivo loja.css, substitua a seção .barra-gerente por: */
+
 /* Barra do gerente */
 .barra-gerente {
   position: fixed;
-  top: 20px;
-  right: 140px; /* Ajustado para não sobrepor o botão de login */
+  top: 65px;
+  right: 10px; /* Ajustado para não sobrepor o botão de login */
   display: flex;
-  gap: 15px;
+  gap: 4.5px; /* Aumentei de 15px para 25px */
   z-index: 1000;
 }
 
 .botao-gerente {
-  padding: 10px 16px;
-  border-radius: 8px;
+  padding: 10px 20px;
+  border-radius: 100px;
   background-color: var(--primary-dark);
   color: var(--text-light);
   text-decoration: none;
-  font-weight: bold;
+  font-weight: bolder;
   box-shadow: var(--shadow);
   transition: var(--transition);
   font-size: 0.9rem;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 25px;
 }
 
 .botao-gerente:hover {
@@ -269,13 +271,14 @@ h2 {
   transform: translateY(-2px);
 }
 
-/* Responsividade */
+/* Ajuste para mobile */
 @media (max-width: 768px) {
-  .container {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    padding: 20px;
-    gap: 20px;
+  .barra-gerente {
+    right: 120px;
+    top: 15px;
+    gap: 15px; /* Um pouco menor no mobile, mas ainda maior que antes */
   }
+
   
   h2 {
     font-size: 2rem;
@@ -307,3 +310,4 @@ h2 {
     font-size: 22px;
   }
 }
+
