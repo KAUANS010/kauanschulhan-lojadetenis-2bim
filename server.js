@@ -7,11 +7,88 @@ const path = require('path');
 const app = express();
 const PORT = 3000;
 
-const CSV_PRODUCTS = 'products.csv';
-const CSV_USERS = 'users.csv';
-
+// ✅ Middlewares para JSON e formulário
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
+
+const CSV_PRODUCTS = 'products.csv';
+const CSV_USERS = 'users.csv';
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
+
+// ====================== admp ============================
+
+
+
+
+// Criar novo usuário
+app.post('/users/create', (req, res) => {
+    const { email, senha, nome } = req.body;
+    if (!email || !senha || !nome) return res.status(400).json({ message: 'Campos obrigatórios.' });
+
+    if (users.find(u => u.email === email)) {
+        return res.status(409).json({ message: 'Usuário já existe.' });
+    }
+
+    const novo = { email, senha, nome, tipo: 'cliente' };
+    users.push(novo);
+    saveUsers();
+    res.status(201).json({ message: 'Usuário criado com sucesso.' });
+});
+
+// Atualizar usuário
+app.put('/users/update', (req, res) => {
+    const { email, novoEmail, novaSenha, novoNome } = req.body;
+    const user = users.find(u => u.email === email);
+    if (!user) return res.status(404).json({ message: 'Usuário não encontrado.' });
+
+    user.email = novoEmail;
+    user.senha = novaSenha;
+    user.nome = novoNome;
+    saveUsers();
+    res.json({ message: 'Usuário atualizado com sucesso.' });
+});
+
+// Importar CSV
+app.post('/users/import', upload.single('arquivo'), (req, res) => {
+    const filePath = req.file.path;
+    const data = fs.readFileSync(filePath, 'utf8').split('\n').filter(Boolean);
+    const header = data[0].split(',');
+    if (header[0] !== 'email' || header[1] !== 'senha') return res.status(400).json({ message: 'CSV inválido.' });
+
+    users = data.slice(1).map(line => {
+        const [email, senha, nome, tipo] = line.split(',');
+        return { email, senha, nome, tipo };
+    });
+
+    saveUsers();
+    fs.unlinkSync(filePath); // limpa o arquivo temporário
+    res.json({ message: 'CSV importado com sucesso.' });
+});
+
+// Exportar CSV
+app.get('/users/export', (req, res) => {
+    res.download(path.resolve(CSV_USERS));
+});
+
+app.delete('/users/:email', (req, res) => {
+    const { email } = req.params;
+    const index = users.findIndex(u => u.email === email);
+    if (index === -1) return res.status(404).json({ message: 'Usuário não encontrado.' });
+
+    users.splice(index, 1);
+    saveUsers();
+    res.json({ message: 'Usuário deletado com sucesso.' });
+});
+
+
+// ===================== admp =============================
+
+
+
+
+
 
 let products = [];
 let users = [];

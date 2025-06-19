@@ -52,3 +52,76 @@ window.onload = () => {
 
   carregarUsuarios();
 };
+
+
+
+async function adicionarUsuario() {
+  const email = prompt("Digite o e-mail do novo usuário:");
+  const senha = prompt("Digite a senha do novo usuário:");
+  const nome = prompt("Digite o nome do novo usuário:");
+  if (!email || !senha || !nome) return alert("Todos os campos são obrigatórios.");
+
+  const res = await fetch('http://localhost:3000/users/create', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, senha, nome })
+  });
+
+  const data = await res.json();
+  alert(data.message);
+  if (res.ok) carregarUsuarios();
+}
+
+async function atualizarUsuario() {
+  const email = prompt("Digite o e-mail do usuário a ser atualizado:");
+  const novoEmail = prompt("Novo e-mail (ou deixe igual):", email);
+  const novaSenha = prompt("Nova senha:");
+  const novoNome = prompt("Novo nome:");
+  if (!email || !novaSenha || !novoNome) return alert("Todos os campos são obrigatórios.");
+
+  const res = await fetch('http://localhost:3000/users/update', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, novoEmail, novaSenha, novoNome })
+  });
+
+  const data = await res.json();
+  alert(data.message);
+  if (res.ok) carregarUsuarios();
+}
+
+async function importarCSV() {
+  const input = document.getElementById("arquivo-csv");
+  if (!input.files.length) return alert("Selecione um arquivo CSV.");
+  const file = input.files[0];
+
+  const formData = new FormData();
+  formData.append('arquivo', file);
+
+  const res = await fetch('http://localhost:3000/users/import', {
+    method: 'POST',
+    body: formData
+  });
+
+  const data = await res.json();
+  alert(data.message);
+  if (res.ok) carregarUsuarios();
+}
+
+function baixarCSV() {
+  window.location.href = 'http://localhost:3000/users/export';
+}
+
+async function deletarUsuario() {
+  const email = prompt("Digite o e-mail do usuário que deseja deletar:");
+  if (!email) return alert("E-mail é obrigatório.");
+  if (!confirm(`Tem certeza que deseja deletar o usuário "${email}"?`)) return;
+
+  const res = await fetch(`http://localhost:3000/users/${email}`, {
+    method: 'DELETE'
+  });
+
+  const data = await res.json();
+  alert(data.message);
+  if (res.ok) carregarUsuarios();
+}
