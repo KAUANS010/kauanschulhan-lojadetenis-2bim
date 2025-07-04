@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Loja de Tênis </title>
-  <link rel="stylesheet" href="./loja.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Loja de Tênis</title>
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="/PROJETO-2/loja/loja.css" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
     href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Tagesschrift&display=swap"
-    rel="stylesheet">
+    rel="stylesheet"
+  />
 </head>
 
 <body>
@@ -22,23 +26,26 @@
     </button>
   </div>
 
-  <h2>Loja de Tênis </h2>
-  <div class="container" id="produtos-container">
-    <!-- Os cards serão inseridos aqui via JavaScript -->
-  </div>
+  <h2>Loja de Tênis</h2>
 
+  <!-- Container de produtos -->
+  <div class="container" id="produtos-container"></div>
+
+  <!-- Botões do gerente -->
   <div id="botoes-gerente" class="barra-gerente" style="display: none;">
-    <a href="../loja/gerente-produto/produto.html" class="botao-gerente">📦 Produto</a>
-    <a href="../loja/gerente-admp/admp.html" class="botao-gerente">🛠 ADMP</a>
-  </div>
+  <a href="/PROJETO-2/loja/gerente-produto/produto.html" class="botao-gerente">📦 Produto</a>
+  <a href="/PROJETO-2/loja/gerente-admp/admp.html" class="botao-gerente">🛠 ADMP</a>
+</div>
 
-  <script src="./loja.js"></script>
-  <script src="../../carrinho.js"></script>
-  <div class="barra-acesso">
-    <a href="../loja/loja.html" title="Loja">👟</a>
-    <a href="../carrinho/carrinho.html" title="Carrinho">🛒</a>
-    <a href="../pagamento/pagamento.html" title="Pagamento">💸</a>
-  </div>
+  <!-- Scripts -->
+  <script src="/public/session-manager.js"></script>
+<script src="/PROJETO-2/loja/loja.js"></script>
+
+  <!-- Barra de acesso rápido -->
+ <div class="barra-acesso">
+  <a href="/PROJETO-2/loja/loja.html" title="Loja">👟</a>
+  <a href="/PROJETO-2/carrinho/carrinho.html" title="Carrinho">🛒</a>
+  <a href="/PROJETO-2/pagamento/pagamento.html" title="Pagamento">💸</a>
+</div>
 </body>
-
 </html>

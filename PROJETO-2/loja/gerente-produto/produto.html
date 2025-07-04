@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
   <title>Gerenciar Produtos</title>
-  <link rel="stylesheet" href="../gerente-produto/produto.css" />
+  <link rel="stylesheet" href="/PROJETO-2/loja/gerente-produto/produto.css" />
 </head>
+
 <body>
   <div class="container">
     <h2>Gestão de Produtos</h2>
@@ -19,15 +21,36 @@
       <input type="hidden" id="produto-id" />
       <input type="text" id="nome" placeholder="Nome" required />
       <input type="number" id="preco" placeholder="Preço" required />
-      <input type="text" id="img" placeholder="URL da imagem" required />
+
+      <!-- Nova seção para upload de imagem -->
+      <div class="upload-section">
+        <label for="img">URL da imagem:</label>
+        <input type="text" id="img" placeholder="URL da imagem" required readonly />
+
+        <div class="file-upload">
+          <input type="file" id="file-input" accept="image/*" style="display: none;" />
+          <button type="button" onclick="selecionarImagem()" class="btn-selecionar">
+            📁 Selecionar Imagem
+          </button>
+
+        </div>
+
+        <div id="preview-container" style="display: none;">
+          <img id="preview-image" alt="Preview"
+            style="max-width: 200px; max-height: 200px; border-radius: 8px; margin-top: 10px;" />
+          <p id="file-name"></p>
+        </div>
+      </div>
+
       <input type="number" id="quantidade" placeholder="Quantidade" required />
       <input type="text" id="features" placeholder="Descrição (separada por |)" />
       <button type="submit">Salvar Produto</button>
     </form>
 
-    <a href="../loja.html" class="botao-voltar">← Voltar à loja</a>
+    <a href="/PROJETO-2/loja/loja.html" class="botao-voltar">← Voltar à loja</a>
   </div>
 
-  <script src="../gerente-produto/produto.js"></script>
+  <script src="/PROJETO-2/loja/gerente-produto/produto.js"></script>
 </body>
+
 </html>

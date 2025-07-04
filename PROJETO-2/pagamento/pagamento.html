@@ -3,11 +3,14 @@
 
 <head>
   <meta charset="UTF-8" /> <!-- Define a codificação de caracteres como UTF-8, suportando acentuação -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- Responsividade: ajusta a largura conforme o dispositivo -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Responsividade: ajusta a largura conforme o dispositivo -->
   <title>Pagamento - Loja de Tênis</title> <!-- Título exibido na aba do navegador -->
-  
-  <link rel="stylesheet" href="../pagamento/pagamento.css"> <!-- Importa o arquivo CSS externo com o estilo da página -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> <!-- Importa ícones do Google Material Icons -->
+
+  <link rel="stylesheet" href="/PROJETO-2/pagamento/pagamento.css">
+  <!-- Importa o arquivo CSS externo com o estilo da página -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Importa ícones do Google Material Icons -->
 </head>
 
 <body> <!-- Corpo do documento, onde ficam os conteúdos visíveis da página -->
@@ -19,34 +22,37 @@
 
 
   <!-- Área de Login -->
-<div class="login-area">
-  <button id="botao-login" class="botao-login" onclick="gerenciarLogin()">
-    <span id="login-icone">🔐</span>
-    <span id="login-texto">Login</span>
-  </button>
-</div>
+  <div class="login-area">
+    <button id="botao-login" class="botao-login" onclick="gerenciarLogin()">
+      <span id="login-icone">🔐</span>
+      <span id="login-texto">Login</span>
+    </button>
+  </div>
 
 
 
   <main> <!-- Conteúdo principal da página -->
-    
+
     <section id="resumoPagamento"></section> <!-- Seção onde será exibido o resumo do pedido (preenchido via JS) -->
 
     <label for="formaPagamento">Forma de pagamento:</label><br /> <!-- Rótulo para o seletor de forma de pagamento -->
 
-    <select id="formaPagamento" onchange="verificarPagamento()"> <!-- Lista suspensa para escolher a forma de pagamento -->
-      <option disabled selected>Escolha sua forma de pagamento</option> <!-- Opção inicial desabilitada como instrução -->
+    <select id="formaPagamento" onchange="verificarPagamento()">
+      <!-- Lista suspensa para escolher a forma de pagamento -->
+      <option disabled selected>Escolha sua forma de pagamento</option>
+      <!-- Opção inicial desabilitada como instrução -->
       <option>Pix</option> <!-- Opção de pagamento via Pix -->
       <option>Cartão de Crédito</option> <!-- Opção de pagamento com cartão -->
       <option>Dinheiro</option> <!-- Opção de pagamento em dinheiro -->
     </select>
 
     <div> <!-- Agrupamento dos botões -->
-      <button class="botao" onclick="finalizarCompra()">Finalizar</button> <!-- Botão que chama a função de finalização -->
-      <button class="botao" onclick="location.href='../carrinho/carrinho.html'">Voltar</button> <!-- Botão para voltar ao carrinho -->
+      <button class="botao" onclick="finalizarCompra()">Finalizar</button>
+      <button class="botao" onclick="location.href='/PROJETO-2/carrinho/carrinho.html'">Voltar</button>
     </div>
 
-    <section id="qrcode-area" class="qrcode-area" style="display: none;"> <!-- Seção oculta inicialmente, exibida se a forma for Pix -->
+    <section id="qrcode-area" class="qrcode-area" style="display: none;">
+      <!-- Seção oculta inicialmente, exibida se a forma for Pix -->
       <h2>Escaneie o QR Code para pagar com PIX</h2> <!-- Instrução de pagamento -->
       <div id="qrcode"></div> <!-- Local onde o QR Code será gerado dinamicamente via JavaScript -->
     </section>
@@ -57,17 +63,18 @@
     <p>&copy; 2025 Loja de Tênis</p> <!-- Texto do rodapé com direitos autorais -->
   </footer>
 
-  <div class="barra-acesso"> <!-- Barra de acesso rápido com atalhos para outras páginas -->
-    <a href="../loja/loja.html" title="Loja">👟</a> <!-- Link para a página da loja, com ícone de tênis -->
-    <a href="../carrinho/carrinho.html" title="Carrinho">🛒</a> <!-- Link para o carrinho, com ícone de carrinho -->
-    <a href="../pagamento/pagamento.html" title="Pagamento">💸</a> <!-- Link para a própria página de pagamento -->
+  <div class="barra-acesso">
+    <a href="/PROJETO-2/loja/loja.html" title="Loja">👟</a>
+    <a href="/PROJETO-2/carrinho/carrinho.html" title="Carrinho">🛒</a>
+    <a href="/PROJETO-2/pagamento/pagamento.html" title="Pagamento">💸</a>
   </div>
 
   <!-- Importação da biblioteca para gerar QR Codes (CDN externa) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <!-- Importação do script JavaScript local da página -->
-  <script src="../pagamento/pagamento.js"></script>
+  <script src="/PROJETO-2/pagamento/pagamento.js"></script>
 
 </body>
+
 </html> <!-- Fim do documento HTML -->

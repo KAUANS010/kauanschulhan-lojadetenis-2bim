@@ -18,7 +18,7 @@ function verificarLoginObrigatorio() {
     alert('Para finalizar a compra, é necessário fazer login.');
     
     // Redirecionar para login
-    window.location.href = '../../LOGIN/login.html';
+    window.location.href = '/LOGIN/login.html';
     return false;
   }
   
@@ -263,7 +263,7 @@ function finalizarCompra() {
     console.log('Compra finalizada, redirecionando para loja...');
     
     // Redireciona para a loja
-    window.location.href = '../loja/loja.html';
+    window.location.href = '/PROJETO-2/loja/loja.html';
   }
 }
 
@@ -310,7 +310,7 @@ function gerenciarLogin() {
   } else {
     // Salva a página atual como anterior
     localStorage.setItem('paginaAnterior', window.location.href);
-    window.location.href = '../../LOGIN/login.html';
+    window.location.href = '/LOGIN/login.html';
   }
 }
 

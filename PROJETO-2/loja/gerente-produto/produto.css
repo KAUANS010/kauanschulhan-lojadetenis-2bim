@@ -20,6 +20,7 @@ input, button {
   border-radius: 6px;
   border: 1px solid #ccc;
   box-sizing: border-box;
+  font-size: 14px;
 }
 
 button {
@@ -27,20 +28,196 @@ button {
   color: white;
   font-weight: bold;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-button:hover {
+button:hover:not(:disabled) {
   background-color: #1c5980;
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .botao-voltar {
   display: inline-block;
   margin-top: 20px;
   text-decoration: none;
-  background: #ccc;
-  padding: 8px 12px;
+  background: #95a5a6;
+  padding: 10px 15px;
   border-radius: 6px;
-  color: black;
+  color: white;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
 }
 
+.botao-voltar:hover {
+  background-color: #7f8c8d;
+}
 
+/* Estilos para a seção de upload */
+.upload-section {
+  margin: 15px 0;
+  padding: 20px;
+  border: 2px dashed #bdc3c7;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  transition: border-color 0.3s ease;
+}
+
+.upload-section:hover {
+  border-color: #27ae60;
+}
+
+.upload-section label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #2c3e50;
+  font-size: 14px;
+}
+
+.file-upload {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn-selecionar {
+  background-color: #27ae60;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-selecionar:hover:not(:disabled) {
+  background-color: #229954;
+}
+
+.btn-selecionar:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+}
+
+#preview-container {
+  text-align: center;
+  margin-top: 15px;
+  padding: 15px;
+  background-color: white;
+  border-radius: 8px;
+  border: 1px solid #ecf0f1;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+#preview-image {
+  display: block;
+  margin: 0 auto 10px auto;
+  border: 2px solid #ecf0f1;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+}
+
+#preview-image:hover {
+  transform: scale(1.05);
+}
+
+#file-name {
+  color: #7f8c8d;
+  font-size: 0.9em;
+  margin: 0;
+  font-style: italic;
+}
+
+/* Input readonly styling */
+input[readonly] {
+  background-color: #ecf0f1;
+  color: #2c3e50;
+  cursor: not-allowed;
+}
+
+/* Estilo para campos obrigatórios */
+input[required] {
+  border-left: 3px solid #e74c3c;
+}
+
+input[required]:valid {
+  border-left: 3px solid #27ae60;
+}
+
+/* Animação de sucesso */
+.success-feedback {
+  background-color: #d5f4e6;
+  border: 1px solid #27ae60;
+  color: #155724;
+  padding: 10px;
+  border-radius: 4px;
+  margin: 10px 0;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+  .container {
+    padding: 20px;
+    margin: 10px;
+  }
+  
+  .file-upload {
+    flex-direction: column;
+  }
+  
+  .btn-selecionar {
+    width: 100%;
+  }
+  
+  #preview-image {
+    max-width: 150px;
+    max-height: 150px;
+  }
+}
+
+/* Melhorias visuais gerais */
+h2, h3 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+h2 {
+  text-align: center;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 10px;
+}
+
+form {
+  margin-top: 20px;
+}
+
+#resultado-produto {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+}
+
+#resultado-produto p {
+  margin: 0 0 10px 0;
+  color: #2c3e50;
+}
+
+#resultado-produto button {
+  width: auto;
+  margin-right: 10px;
+  padding: 8px 15px;
+}

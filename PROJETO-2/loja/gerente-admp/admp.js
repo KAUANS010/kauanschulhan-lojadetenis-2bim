@@ -1,5 +1,6 @@
-async function carregarUsuarios() {
-  const res = await fetch('http://localhost:3000/users');
+async function carregarUsuarios( ) {
+  const baseUrl = window.location.origin; // Adicionado
+  const res = await fetch(`${baseUrl}/users`); // Modificado
   const usuarios = await res.json();
   const tabela = document.getElementById('tabela-usuarios');
   tabela.innerHTML = '';
@@ -28,7 +29,8 @@ async function carregarUsuarios() {
 async function alterarTipo(email, novoTipo) {
   if (!confirm(`Deseja mesmo mudar o tipo de "${email}" para ${novoTipo}?`)) return;
 
-  const res = await fetch(`http://localhost:3000/users/${email}`, {
+  const baseUrl = window.location.origin; // Adicionado
+  const res = await fetch(`${baseUrl}/users/${email}`, { // Modificado
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ tipo: novoTipo })
@@ -46,13 +48,13 @@ window.onload = () => {
   const usuario = JSON.parse(localStorage.getItem('usuario'));
   if (!usuario || usuario.tipo !== 'gerente') {
     alert("Acesso negado. Apenas gerentes podem acessar.");
-    window.location.href = "./login.html";
+    // Ajuste o caminho para o login.html se necessário, dependendo da estrutura de pastas
+    window.location.href = "/LOGIN/login.html"; // Ajustado para um caminho mais genérico
     return;
   }
 
   carregarUsuarios();
 };
-
 
 
 async function adicionarUsuario() {
@@ -61,7 +63,8 @@ async function adicionarUsuario() {
   const nome = prompt("Digite o nome do novo usuário:");
   if (!email || !senha || !nome) return alert("Todos os campos são obrigatórios.");
 
-  const res = await fetch('http://localhost:3000/users/create', {
+  const baseUrl = window.location.origin; // Adicionado
+  const res = await fetch(`${baseUrl}/users/create`, { // Modificado
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, senha, nome })
@@ -79,7 +82,8 @@ async function atualizarUsuario() {
   const novoNome = prompt("Novo nome:");
   if (!email || !novaSenha || !novoNome) return alert("Todos os campos são obrigatórios.");
 
-  const res = await fetch('http://localhost:3000/users/update', {
+  const baseUrl = window.location.origin; // Adicionado
+  const res = await fetch(`${baseUrl}/users/update`, { // Modificado
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, novoEmail, novaSenha, novoNome })
@@ -98,7 +102,8 @@ async function importarCSV() {
   const formData = new FormData();
   formData.append('arquivo', file);
 
-  const res = await fetch('http://localhost:3000/users/import', {
+  const baseUrl = window.location.origin; // Adicionado
+  const res = await fetch(`${baseUrl}/users/import`, { // Modificado
     method: 'POST',
     body: formData
   });
@@ -109,7 +114,8 @@ async function importarCSV() {
 }
 
 function baixarCSV() {
-  window.location.href = 'http://localhost:3000/users/export';
+  const baseUrl = window.location.origin; // Adicionado
+  window.location.href = `${baseUrl}/users/export`; // Modificado
 }
 
 async function deletarUsuario() {
@@ -117,7 +123,8 @@ async function deletarUsuario() {
   if (!email) return alert("E-mail é obrigatório.");
   if (!confirm(`Tem certeza que deseja deletar o usuário "${email}"?`)) return;
 
-  const res = await fetch(`http://localhost:3000/users/${email}`, {
+  const baseUrl = window.location.origin; // Adicionado
+  const res = await fetch(`${baseUrl}/users/${email}`, { // Modificado
     method: 'DELETE'
   });
 
