@@ -9,5 +9,5 @@ id,name,price,img,quantity,features
 8,Tênis 8,189.9,/public/imgs/tenis8.jpg,9,Leve;Casual
 9,Tênis 9,219.9,/public/imgs/tenis9.jpg,6,Durável;Confortável
 10,Tênis 10,199.9,/public/imgs/tenis10.jpg,11,Esportivo;Leve
-11,Tênis 11,259.9,/public/imgs/tenis11.jpg,7,Resistente;Estiloso
-12,Tênis 12,279.9,/public/imgs/tenis12.jpg,4,Premium;Confortável;Exclusivo
+11,Tênis 11,299.9,/public/imgs/produto_1751638365067.jpg,1,azul;confortável;flexível
+12,Tênis 12,259,/public/imgs/produto_1751638545576.jpg,1,marrom;confortável;estiloso
