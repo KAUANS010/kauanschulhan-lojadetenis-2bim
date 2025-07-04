@@ -136,6 +136,151 @@ function saveProducts() {
   fs.writeFileSync(CSV_PRODUCTS, data.join('\n'));
 }
 
+// ======================= FUNÇÕES DE VALIDAÇÃO =======================
+function validarNomeProdutoUnico(nome, idExcluir = null) {
+  // Normaliza o nome para comparação (remove espaços extras e converte para minúsculas)
+  const nomeNormalizado = nome.trim().toLowerCase();
+  
+  return !products.some(produto => {
+    const produtoNomeNormalizado = produto.name.trim().toLowerCase();
+    return produtoNomeNormalizado === nomeNormalizado && produto.id !== idExcluir;
+  });
+}
+
+function validarIdUnico(id) {
+  return !products.some(produto => produto.id === id);
+}
+
+// ======================= ROTAS API ATUALIZADAS =======================
+
+// Produtos
+app.get('/products', (req, res) => res.json(products));
+
+app.get('/products/:id', (req, res) => {
+  const product = products.find(p => p.id === parseInt(req.params.id));
+  product ? res.json(product) : res.status(404).json({ message: 'Produto não encontrado' });
+});
+
+app.post('/products', async (req, res) => {
+  const { name, price, img, quantity, features, tempFileName } = req.body;
+  
+  // Validações básicas
+  if (!name || !img || price === undefined || quantity === undefined) {
+    return res.status(400).json({ message: 'Campos obrigatórios faltando.' });
+  }
+
+  // Validar nome único
+  if (!validarNomeProdutoUnico(name)) {
+    return res.status(409).json({ 
+      message: 'Já existe um produto com este nome. Por favor, escolha outro nome.' 
+    });
+  }
+
+  // Validar preço
+  const precoNumerico = parseFloat(price);
+  if (isNaN(precoNumerico) || precoNumerico <= 0) {
+    return res.status(400).json({ message: 'Preço deve ser um número positivo.' });
+  }
+
+  // Validar quantidade
+  const quantidadeNumerica = parseInt(quantity);
+  if (isNaN(quantidadeNumerica) || quantidadeNumerica < 0) {
+    return res.status(400).json({ message: 'Quantidade deve ser um número não negativo.' });
+  }
+
+  const newProduct = {
+    id: nextId++,
+    name: name.trim(),
+    price: precoNumerico,
+    img: corrigirCaminhoImagem(img),
+    quantity: quantidadeNumerica,
+    features: features || []
+  };
+
+  products.push(newProduct);
+
+  if (tempFileName) {
+    // Lógica para renomear arquivo temporário, se necessário
+  }
+
+  saveProducts();
+
+  res.status(201).json(newProduct);
+});
+
+app.put('/products/:id', async (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = products.findIndex(p => p.id === id);
+  
+  if (index === -1) {
+    return res.status(404).json({ message: 'Produto não encontrado.' });
+  }
+
+  const { name, price, img, quantity, features, tempFileName } = req.body;
+
+  // Validações básicas
+  if (!name || !img || price === undefined || quantity === undefined) {
+    return res.status(400).json({ message: 'Campos obrigatórios faltando.' });
+  }
+
+  // Validar nome único (excluindo o produto atual)
+  if (!validarNomeProdutoUnico(name, id)) {
+    return res.status(409).json({ 
+      message: 'Já existe outro produto com este nome. Por favor, escolha outro nome.' 
+    });
+  }
+
+  // Validar preço
+  const precoNumerico = parseFloat(price);
+  if (isNaN(precoNumerico) || precoNumerico <= 0) {
+    return res.status(400).json({ message: 'Preço deve ser um número positivo.' });
+  }
+
+  // Validar quantidade
+  const quantidadeNumerica = parseInt(quantity);
+  if (isNaN(quantidadeNumerica) || quantidadeNumerica < 0) {
+    return res.status(400).json({ message: 'Quantidade deve ser um número não negativo.' });
+  }
+
+  let finalImg = img;
+  if (tempFileName) {
+    // Lógica para renomear arquivo temporário, se necessário
+  }
+
+  products[index] = { 
+    id, 
+    name: name.trim(), 
+    price: precoNumerico, 
+    img: corrigirCaminhoImagem(finalImg), 
+    quantity: quantidadeNumerica, 
+    features 
+  };
+  
+  saveProducts();
+  res.json(products[index]);
+});
+
+app.delete('/products/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = products.findIndex(p => p.id === id);
+  
+  if (index === -1) {
+    return res.status(404).json({ 
+      message: 'Produto não encontrado.',
+      success: false 
+    });
+  }
+
+  const produtoRemovido = products[index];
+  products.splice(index, 1);
+  saveProducts();
+  
+  res.json({ 
+    message: `Produto "${produtoRemovido.name}" deletado com sucesso!`,
+    success: true 
+  });
+});
+
 function setupAutoSave() {
   setInterval(() => saveProducts(), 600000);
 }
@@ -313,31 +458,111 @@ app.post('/users/create', (req, res) => {
 });
 
 app.put('/users/update', (req, res) => {
-  const { email, novoEmail, novaSenha, novoNome } = req.body;
+  const { email, novoEmail, novaSenha, novoNome, novoTipo } = req.body;
   const user = users.find(u => u.email === email);
   if (!user) return res.status(404).json({ message: 'Usuário não encontrado.' });
 
-  user.email = novoEmail;
-  user.senha = novaSenha;
-  user.nome = novoNome;
+  // Atualiza os dados do usuário
+  user.email = novoEmail || user.email;
+  user.senha = novaSenha || user.senha;
+  user.nome = novoNome || user.nome;
+  user.tipo = novoTipo || user.tipo; // Adiciona suporte para alterar o tipo
+
   saveUsers();
   res.json({ message: 'Usuário atualizado com sucesso.' });
 });
 
 app.post('/users/import', uploadUsers.single('arquivo'), (req, res) => {
-  const filePath = req.file.path;
-  const data = fs.readFileSync(filePath, 'utf8').split('\n').filter(Boolean);
-  const header = data[0].split(',');
-  if (header[0] !== 'email' || header[1] !== 'senha') return res.status(400).json({ message: 'CSV inválido.' });
+  try {
+    // Verificar se o arquivo foi enviado
+    if (!req.file) {
+      return res.status(400).json({ message: 'Nenhum arquivo foi enviado.' });
+    }
 
-  users = data.slice(1).map(line => {
-    const [email, senha, nome, tipo] = line.split(',');
-    return { email, senha, nome, tipo };
-  });
+    const filePath = req.file.path;
+    
+    // Verificar se o arquivo existe
+    if (!fs.existsSync(filePath)) {
+      return res.status(400).json({ message: 'Arquivo não encontrado.' });
+    }
 
-  saveUsers();
-  fs.unlinkSync(filePath);
-  res.json({ message: 'CSV importado com sucesso.' });
+    // Ler o arquivo CSV
+    const data = fs.readFileSync(filePath, 'utf8').split('\n').filter(Boolean);
+    
+    // Verificar se o arquivo não está vazio
+    if (data.length === 0) {
+      fs.unlinkSync(filePath); // Limpar arquivo temporário
+      return res.status(400).json({ message: 'Arquivo CSV está vazio.' });
+    }
+
+    // Verificar o cabeçalho do CSV
+    const header = data[0].split(',');
+    if (header.length < 4 || header[0] !== 'email' || header[1] !== 'senha' || header[2] !== 'nome' || header[3] !== 'tipo') {
+      fs.unlinkSync(filePath); // Limpar arquivo temporário
+      return res.status(400).json({ 
+        message: 'CSV inválido. O cabeçalho deve ser: email,senha,nome,tipo' 
+      });
+    }
+
+    // Processar as linhas do CSV
+    const novosUsuarios = [];
+    for (let i = 1; i < data.length; i++) {
+      const linha = data[i].trim();
+      if (!linha) continue; // Pular linhas vazias
+
+      const [email, senha, nome, tipo] = linha.split(',');
+      
+      // Validar campos obrigatórios
+      if (!email || !senha || !nome || !tipo) {
+        fs.unlinkSync(filePath);
+        return res.status(400).json({ 
+          message: `Erro na linha ${i + 1}: Todos os campos são obrigatórios (email,senha,nome,tipo)` 
+        });
+      }
+
+      // Verificar se o usuário já existe
+      const usuarioExistente = users.find(u => u.email === email);
+      if (usuarioExistente) {
+        console.log(`Usuário ${email} já existe, será atualizado.`);
+        // Atualizar usuário existente
+        usuarioExistente.senha = senha;
+        usuarioExistente.nome = nome;
+        usuarioExistente.tipo = tipo;
+      } else {
+        // Adicionar novo usuário
+        novosUsuarios.push({ email, senha, nome, tipo });
+      }
+    }
+
+    // Adicionar novos usuários à lista
+    users.push(...novosUsuarios);
+
+    // Salvar no arquivo CSV
+    saveUsers();
+
+    // Limpar arquivo temporário
+    fs.unlinkSync(filePath);
+
+    res.json({ 
+      message: `CSV importado com sucesso! ${novosUsuarios.length} usuários adicionados.` 
+    });
+
+  } catch (error) {
+    console.error('Erro ao importar CSV:', error);
+    
+    // Limpar arquivo temporário em caso de erro
+    if (req.file && req.file.path && fs.existsSync(req.file.path)) {
+      try {
+        fs.unlinkSync(req.file.path);
+      } catch (unlinkError) {
+        console.error('Erro ao limpar arquivo temporário:', unlinkError);
+      }
+    }
+
+    res.status(500).json({ 
+      message: 'Erro interno do servidor ao processar o arquivo CSV.' 
+    });
+  }
 });
 
 app.get('/users/export', (req, res) => {
