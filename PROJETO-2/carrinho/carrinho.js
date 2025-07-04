@@ -37,11 +37,11 @@ function adicionarAoCarrinho(produto) {
   // Define um ID único baseado no ID do produto
 
   card.innerHTML = `
-    <img src="${produto.img}" alt="${produto.nome}" />
-    <h3>${produto.nome}</h3>
+    <img src="${produto.img}" alt="${produto.name}" />
+    <h3>${produto.name}</h3>
     <p><strong>Tamanho:</strong> ${produto.tamanho}</p>
     <p><strong>Cor:</strong> ${produto.cor}</p>
-    <p><strong>Quantidade:</strong> ${produto.quantidade}</p>
+    <p><strong>Quantidade:</strong> ${produto.quantity}</p>
     <p>${produto.descricao || 'Sem descrição disponível.'}</p>
     <button class="remover-btn" onclick="removerItem(${produto.id})">Remover</button>
   `;
@@ -94,13 +94,13 @@ function adicionarBotaoFinalizar() {
     const produtos = JSON.parse(localStorage.getItem('carrinho')) || []; // Recarrega produtos para garantir que está atualizado
 
     if (produtos.length > 0) {
-      const valorTotal = produtos.reduce((soma, p) => soma + (p.preco * p.quantidade), 0);
+      const valorTotal = produtos.reduce((soma, p) => soma + (p.price * p.quantity), 0);
       // Calcula o valor total dos produtos multiplicando preço por quantidade
 
       localStorage.setItem('valorTotal', valorTotal.toFixed(2));
       // Salva o valor total (com duas casas decimais) no localStorage
 
-      window.location.href = '../pagamento/pagamento.html';
+      window.location.href = '/PROJETO-2/pagamento/pagamento.html';
       // Redireciona o usuário para a página de pagamento
     } else {
       alert('Seu carrinho está vazio. Adicione itens antes de finalizar a compra.'); // Mensagem mais clara
