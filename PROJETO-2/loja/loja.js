@@ -1,4 +1,9 @@
 async function carregarProdutos( ) {
+
+   const container = document.getElementById("produtos-container");
+  if (!container) return; // Protege contra páginas que não têm esse elemento
+
+
   try {
     // Obtém a origem (protocolo, host e porta) da URL atual
     const baseUrl = window.location.origin;
@@ -58,13 +63,13 @@ function adicionarAoCarrinhoLoja(id) {
 
   const produtoCarrinho = {
     id: produto.id,
-    nome: produto.name,
-    preco: produto.price,
+    name: produto.name,
+    price: produto.price,
     img: produto.img,
     descricao: produto.features?.join(', ') || '',
     tamanho,
     cor,
-    quantidade
+    quantity: quantidade
   };
 
   const existente = carrinho.find(p =>
@@ -74,16 +79,16 @@ function adicionarAoCarrinhoLoja(id) {
   let mensagem = '';
 
   if (existente) {
-    existente.quantidade += produtoCarrinho.quantidade;
-    mensagem = `${produtoCarrinho.nome} (+${produtoCarrinho.quantidade} und.) já está no carrinho.`;
+    existente.quantity += produtoCarrinho.quantity;
+    mensagem = `${produtoCarrinho.name} (+${produtoCarrinho.quantity} und.) já está no carrinho.`;
   } else {
     carrinho.push(produtoCarrinho);
-    mensagem = `${produtoCarrinho.nome} (${produtoCarrinho.quantidade} und.) foi adicionado ao carrinho.`;
+    mensagem = `${produtoCarrinho.name} (${produtoCarrinho.quantity} und.) foi adicionado ao carrinho.`;
   }
 
   localStorage.setItem('carrinho', JSON.stringify(carrinho));
 
-  const totalItens = carrinho.reduce((sum, p) => sum + p.quantidade, 0);
+  const totalItens = carrinho.reduce((sum, p) => sum + p.quantity, 0);
 
   alert(`${mensagem}\nTotal de itens: ${totalItens}`);
 }
