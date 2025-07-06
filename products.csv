@@ -11,3 +11,4 @@ id,name,price,img,quantity,features
 10,Tênis 10,199.9,/public/imgs/tenis10.jpg,11,Esportivo|Leve
 11,Tênis 11,259.9,/public/imgs/11.jpg,1,azul|legal|bonito
 12,Tênis 12,258.5,/public/imgs/12.jpg,1,Confortável|Macio|Atraente
+13,Tênis 13,250.59,/public/imgs/13.jpg,1,Confortável|Macio|Atraente

@@ -542,7 +542,7 @@ setInterval(() => {
   // Esta função roda automaticamente com express-session
   // Mas você pode adicionar logs para debug
   console.log('🧹 Limpeza automática de sessões executada');
-}, 300000); // A cada 1 minuto
+}, 600000); // A cada 10 minutos
 
 
 app.post("/register", (req, res) => {
