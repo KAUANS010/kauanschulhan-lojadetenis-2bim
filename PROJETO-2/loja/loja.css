@@ -1,313 +1,602 @@
+/* ==================== VARIÁVEIS GLOBAIS ==================== */
 :root {
-  --primary-color: #1a4d7a;
-  --primary-dark: #163f5c;
-  --primary-light: #2980b9;
-  --secondary-color: #f0f3f5;
-  --text-dark: #1a1a1a;
-  --text-light: #ffffff;
-  --text-gray: #333333;
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  /* Cores principais */
+  --primary-color: #1a4d7a;        /* Azul primário (principal) */
+  --primary-dark: #163f5c;         /* Versão mais escura do azul primário */
+  --primary-light: #2980b9;        /* Versão mais clara do azul primário */
+  
+  /* Cores secundárias */
+  --secondary-color: #f0f3f5;      /* Cor de fundo para cards (cinza claro) */
+  
+  /* Cores de texto */
+  --text-dark: #1a1a1a;           /* Texto escuro (quase preto) */
+  --text-light: #ffffff;           /* Texto claro (branco) */
+  --text-gray: #333333;            /* Texto cinza */
+  
+  /* Efeitos visuais */
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.15);          /* Sombra padrão */
+  --card-shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.2); /* Sombra para hover */
+  
+  /* Transições */
+  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Transição suave */
+  
+  /* Bordas */
+  --card-border-radius: 20px;      /* Raio das bordas dos cards */
 }
 
+/* ==================== ESTILOS GERAIS ==================== */
 body {
-  font-family: 'Open Sans', sans-serif;
-  margin: 0;
-  padding: 0;
+  font-family: 'Open Sans', sans-serif; /* Define a fonte padrão */
+  margin: 0;                           /* Remove margens padrão do navegador */
+  padding: 0;                          /* Remove paddings padrão */
+  
+  /* Fundo gradiente animado */
   background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-  background-size: 400% 400%;
-  animation: gradientBG 15s ease infinite;
-  color: var(--text-light);
-  line-height: 1.6;
-  min-height: 100vh;
+  background-size: 400% 400%;          /* Permite a animação do gradiente */
+  animation: gradientBG 15s ease infinite; /* Animação contínua do gradiente */
+  
+  color: var(--text-light);            /* Cor padrão do texto */
+  line-height: 1.6;                    /* Espaçamento entre linhas */
+  min-height: 100vh;                   /* Garante que o body ocupe toda a altura da tela */
 }
 
+/* ==================== TÍTULO PRINCIPAL ==================== */
 h2 {
-  font-family: "Tagesschrift", system-ui;
-  font-weight: 400;
-  color: var(--text-light);
-  margin: 30px 0;
-  text-align: center;
-  font-size: 2.5rem;
-  letter-spacing: 1px;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+  font-family: "Tagesschrift", system-ui; /* Fonte especial para títulos */
+  font-weight: 400;                     /* Peso da fonte (regular) */
+  color: var(--text-light);             /* Cor do texto */
+  margin: 30px 0;                       /* Margem superior e inferior */
+  text-align: center;                   /* Centraliza o texto */
+  font-size: 2.5rem;                    /* Tamanho da fonte (40px) */
+  letter-spacing: 1px;                  /* Espaçamento entre letras */
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3); /* Sombra sutil no texto */
+  position: relative;                   /* Permite posicionar elementos filhos */
+  padding-bottom: 1px;                 /* Espaço na parte inferior */
 }
 
-/* Área de Login - NOVO */
+/* Linha decorativa abaixo do título */
+h2::after {
+  content: '';                          /* Cria um pseudo-elemento */
+  position: absolute;                   /* Posicionamento absoluto */
+  bottom: 0;                            /* Alinha na parte inferior */
+  left: 50%;                            /* Centraliza horizontalmente */
+  transform: translateX(-50%);          /* Ajuste fino para centralizar */
+  width: 1000px;                         /* Largura da linha */
+  height: 3px;                          /* Altura da linha */
+  /* Gradiente transparente-azul-transparente */
+  background: linear-gradient(90deg, transparent, var(--primary-light), transparent);
+}
+
+/* ==================== ÁREA DE LOGIN ==================== */
 .login-area {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 1001;
+  position: fixed;       /* Fixa na tela (não rola com a página) */
+  top: 20px;             /* Distância do topo */
+  right: 20px;           /* Distância da direita */
+  z-index: 1001;         /* Garante que fique acima de outros elementos */
 }
 
+/* Estilo do botão de login */
 .botao-login {
+  /* Gradiente de fundo azul-cinza */
   background: linear-gradient(135deg, #3498db, #7f8c8d);
-  color: var(--text-light);
-  border: none;
-  padding: 12px 20px;
-  border-radius: 25px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 0.95rem;
-  box-shadow: var(--shadow);
-  transition: var(--transition);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 100px;
-  justify-content: center;
+  color: var(--text-light);             /* Cor do texto */
+  border: none;                         /* Remove borda padrão */
+  padding: 12px 20px;                   /* Espaçamento interno */
+  border-radius: 25px;                  /* Bordas completamente arredondadas */
+  cursor: pointer;                      /* Cursor de ponteiro ao passar o mouse */
+  font-weight: bold;                    /* Texto em negrito */
+  font-size: 0.95rem;                   /* Tamanho da fonte (~15px) */
+  box-shadow: var(--shadow);            /* Sombra sutil */
+  transition: var(--transition);        /* Transição suave para efeitos hover */
+  display: flex;                        /* Layout flexível */
+  align-items: center;                  /* Centraliza verticalmente */
+  gap: 8px;                             /* Espaço entre ícone e texto */
+  min-width: 100px;                     /* Largura mínima */
+  justify-content: center;              /* Centraliza horizontalmente */
+  position: relative;                   /* Permite posicionar pseudo-elementos */
+  overflow: hidden;                     /* Esconde qualquer conteúdo que ultrapasse */
 }
 
+/* Efeito de brilho que passa no hover */
+.botao-login::after {
+  content: '';                          /* Pseudo-elemento */
+  position: absolute;                   /* Posicionamento absoluto */
+  top: 0; left: -100%;                  /* Começa fora do botão (esquerda) */
+  width: 100%; height: 100%;            /* Ocupa todo o espaço do botão */
+  /* Gradiente para efeito de brilho */
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: 0.5s;                     /* Duração da animação */
+}
+
+/* Animação do brilho ao passar o mouse */
+.botao-login:hover::after {
+  left: 100%;                           /* Move o brilho para a direita */
+}
+
+/* Efeitos ao passar o mouse */
 .botao-login:hover {
+  /* Gradiente mais escuro no hover */
   background: linear-gradient(135deg, #2980b9, #95a5a6);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);          /* Levanta levemente o botão */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2); /* Sombra mais pronunciada */
 }
 
+/* Efeito ao clicar */
 .botao-login:active {
-  transform: translateY(0);
+  transform: translateY(0);             /* Volta à posição original */
 }
 
+/* Estilo quando o usuário está logado */
 .botao-login.logado {
+  /* Gradiente verde-cinza para indicar estado logado */
   background: linear-gradient(135deg, #27ae60, #7f8c8d);
 }
 
+/* Hover para estado logado */
 .botao-login.logado:hover {
+  /* Gradiente verde mais claro no hover */
   background: linear-gradient(135deg, #2ecc71, #95a5a6);
 }
 
-/* Layout principal dos produtos */
+/* ==================== CONTAINER DE PRODUTOS ==================== */
 .container {
-  display: grid;
+  display: grid;                        /* Layout em grid */
+  /* Colunas responsivas (mínimo 280px, máximo 1 fração do espaço) */
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 35px;
-  padding: 40px;
-  max-width: 1400px;
-  margin: 0 auto;
-  box-sizing: border-box;
-  margin-top: 60px; /* Espaço para o botão de login */
+  gap: 65px;                            /* Espaço entre os cards */
+  padding: 10px;                        /* Espaçamento interno */
+  max-width: 1400px;                    /* Largura máxima */
+  margin: 0 auto;                       /* Centraliza na página */
+  box-sizing: border-box;               /* Inclui padding no cálculo de largura */
+  margin-top: 1px;                     /* Espaço para o botão de login */
+  margin-bottom: 80px;                  /* Espaço para a barra de acesso */
 }
 
-/* Estilo do cartão do produto */
+/* ==================== CARDS DE PRODUTOS ==================== */
 .card {
-  background-color: var(--secondary-color);
-  border: none;
-  border-radius: 16px;
-  padding: 25px;
-  box-shadow: var(--shadow);
-  text-align: center;
-  transition: var(--transition);
-  color: var(--text-dark);
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden;
+  background-color: var(--secondary-color); /* Cor de fundo */
+  border: none;                         /* Remove borda padrão */
+  border-radius: var(--card-border-radius); /* Bordas arredondadas */
+  padding: 10%;                        /* Espaçamento interno */
+  box-shadow: var(--shadow);            /* Sombra sutil */
+  text-align: center;                   /* Centraliza o conteúdo */
+  transition: var(--transition);        /* Transição suave para hover */
+  color: var(--text-dark);             /* Cor do texto */
+  display: flex;                        /* Layout flexível */
+  flex-direction: column;              /* Organiza os itens em coluna */
+  height: 100%;                        /* Ocupa toda a altura disponível */
+  overflow: hidden;                     /* Esconde conteúdo que ultrapasse */
+  position: relative;                   /* Permite posicionar pseudo-elementos */
+  z-index: 1;                          /* Camada de empilhamento */
+  /* Borda sutil com transparência */
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Efeito de gradiente ao redor do card no hover */
+.card::before {
+  content: '';                          /* Pseudo-elemento */
+  position: absolute;                   /* Posicionamento absoluto */
+  /* Estende 2px além do card */
+  top: -2px; left: -2px; right: -2px; bottom: -2px;
+  /* Gradiente azul-branco-azul */
+  background: linear-gradient(45deg, 
+    rgba(26, 77, 122, 0.1), 
+    rgba(255, 255, 255, 0.3), 
+    rgba(26, 77, 122, 0.1));
+  z-index: -1;                          /* Fica atrás do conteúdo */
+  border-radius: var(--card-border-radius); /* Mesmo raio do card */
+  opacity: 0;                           /* Inicialmente invisível */
+  transition: var(--transition);        /* Aparece suavemente */
+}
+
+/* Mostra o gradiente ao passar o mouse */
+.card:hover::before {
+  opacity: 1;                           /* Torna visível */
+}
+
+/* Efeitos ao passar o mouse no card */
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  transform: translateY(-10px);         /* Levanta o card */
+  box-shadow: var(--card-shadow-hover); /* Sombra mais pronunciada */
 }
 
+/* Estilo da imagem do produto */
 .card img {
-  width: 100%;
-  height: 200px;
-  object-fit: contain;
-  border-radius: 8px;
-  margin-bottom: 15px;
-  transition: var(--transition);
+  width: 100%;                          /* Largura total do card */
+  height: 200px;                        /* Altura fixa */
+  object-fit: contain;                  /* Mantém proporção sem cortar */
+  border-radius: 12px;                  /* Bordas levemente arredondadas */
+  margin-bottom: 0px;                  /* Espaço abaixo da imagem */
+  transition: var(--transition);        /* Transição suave */
+  background: white;                    /* Fundo branco para imagens transparentes */
+  padding: 10px;                        /* Espaço ao redor da imagem */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil */
 }
 
+/* Efeito na imagem ao passar o mouse */
 .card:hover img {
-  transform: scale(1.05);
+  transform: scale(1.05) rotate(1deg);  /* Aumenta e gira levemente */
 }
 
+/* Estilo do nome do produto */
 .card h3 {
-  margin: 10px 0;
-  font-size: 1.3rem;
-  color: var(--primary-dark);
+  margin: 5px 0;                       /* Espaço acima e abaixo */
+  font-size: 1.3rem;                    /* Tamanho da fonte (~21px) */
+  color: var(--primary-dark);          /* Cor do texto (azul escuro) */
+  position: relative;                   /* Permite posicionar pseudo-elemento */
+  display: inline-block;                /* Permite largura personalizada */
 }
 
+/* Linha decorativa abaixo do nome */
+.card h3::after {
+  content: '';                          /* Pseudo-elemento */
+  position: absolute;                   /* Posicionamento absoluto */
+  bottom: -5px;                         /* Posiciona abaixo do texto */
+  left: 50%;                            /* Centraliza */
+  transform: translateX(-50%);          /* Ajuste fino para centralizar */
+  width: 50px;                          /* Largura inicial */
+  height: 2px;                          /* Altura da linha */
+  background: var(--primary-light);     /* Cor da linha (azul claro) */
+  transition: var(--transition);        /* Transição suave */
+}
+
+/* Efeito na linha ao passar o mouse */
+.card:hover h3::after {
+  width: 80px;                          /* Aumenta a largura */
+}
+
+/* Estilo do preço */
 .price {
-  font-weight: bold;
-  color: var(--primary-color);
-  margin: 10px 0;
-  font-size: 1.4rem;
+  font-weight: bold;                    /* Texto em negrito */
+  color: var(--primary-color);         /* Cor do texto (azul primário) */
+  margin: 5px 0;                       /* Espaço acima e abaixo */
+  font-size: 1.4rem;                    /* Tamanho da fonte (~22px) */
+  position: relative;                   /* Permite posicionar pseudo-elementos */
+  display: inline-block;                /* Permite largura personalizada */
+  padding: 5px 15px;                    /* Espaçamento interno */
+  background: rgba(26, 77, 122, 0.1);  /* Fundo semi-transparente */
+  border-radius: 30px;                  /* Bordas completamente arredondadas */
 }
 
+/* Estilo da descrição */
 .descricao {
-  font-size: 0.9rem;
-  color: var(--text-gray);
-  margin: 10px 0 15px;
-  flex-grow: 1;
+  font-size: 0.9rem;                    /* Tamanho da fonte (~14px) */
+  color: var(--text-gray);             /* Cor do texto (cinza) */
+  margin: 10px 0 -40px;                  /* Espaço acima e abaixo */
+  flex-grow: 1;                         /* Ocupa espaço disponível */
+  line-height: 1.5;                     /* Espaçamento entre linhas */
 }
 
-/* Botão Comprar */
+/* ==================== BOTÃO COMPRAR ==================== */
 .add-button {
-  background-color: var(--primary-color);
-  color: var(--text-light);
-  border: none;
-  padding: 12px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  margin-top: 15px;
-  transition: var(--transition);
-  font-size: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  background-color: var(--primary-color); /* Cor de fundo (azul primário) */
+  color: var(--text-light);             /* Cor do texto (branco) */
+  border: none;                         /* Remove borda padrão */
+  padding: 12px 20px;                   /* Espaçamento interno */
+  border-radius: 50px;                  /* Bordas completamente arredondadas */
+  cursor: pointer;                      /* Cursor de ponteiro */
+  font-weight: bold;                    /* Texto em negrito */
+  margin-top: 15px;                     /* Espaço acima */
+  transition: var(--transition);        /* Transição suave */
+  font-size: 1rem;                      /* Tamanho da fonte (~16px) */
+  text-transform: uppercase;            /* Texto em maiúsculas */
+  letter-spacing: 1px;                  /* Espaçamento entre letras */
+  position: relative;                   /* Permite posicionar pseudo-elementos */
+  overflow: hidden;                     /* Esconde transbordamento */
+  box-shadow: 0 4px 15px rgba(26, 77, 122, 0.3); /* Sombra azulada */
 }
 
+/* Efeito de brilho que passa no hover */
+.add-button::after {
+  content: '';                          /* Pseudo-elemento */
+  position: absolute;                   /* Posicionamento absoluto */
+  top: 0; left: -100%;                  /* Começa fora do botão */
+  width: 100%; height: 100%;            /* Ocupa todo o botão */
+  /* Gradiente para efeito de brilho */
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: 0.5s;                     /* Duração da animação */
+}
+
+/* Animação do brilho ao passar o mouse */
+.add-button:hover::after {
+  left: 100%;                           /* Move o brilho para a direita */
+}
+
+/* Efeitos ao passar o mouse */
 .add-button:hover {
-  background-color: var(--primary-dark);
-  transform: translateY(-2px);
+  background-color: var(--primary-dark); /* Cor mais escura */
+  transform: translateY(-3px);          /* Levanta levemente */
+  box-shadow: 0 6px 20px rgba(26, 77, 122, 0.4); /* Sombra mais intensa */
 }
 
-/* Seções de opções */
+/* ==================== SEÇÃO DE OPÇÕES ==================== */
 .opcoes {
-  margin-top: 15px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  font-size: 0.9rem;
-  text-align: left;
-  padding: 10px 0;
+  margin-top: 1px;                     /* Espaço acima */
+  display: flex;                        /* Layout flexível */
+  flex-direction: column;              /* Organiza em coluna */
+  gap: 10px;                           /* Espaço entre elementos */
+  font-size: 0.9rem;                    /* Tamanho da fonte (~14px) */
+  text-align: left;                     /* Alinhamento à esquerda */
+  padding: 15px 0;                      /* Espaçamento interno */
+  /* Linhas divisórias acima e abaixo */
   border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
+/* Estilo das labels */
 .opcoes label {
-  color: var(--text-dark);
-  font-weight: 600;
-  margin-bottom: 3px;
+  color: var(--text-dark);             /* Cor do texto */
+  font-weight: 600;                    /* Peso da fonte (semi-negrito) */
+  margin-bottom: 1px;                  /* Espaço abaixo */
+  display: block;                      /* Faz ocupar linha inteira */
 }
 
+/* Estilo dos selects e inputs */
 .opcoes select,
 .opcoes input {
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: 1px solid var(--primary-light);
-  background-color: #ffffff;
-  color: var(--text-dark);
-  font-size: 0.9rem;
-  transition: var(--transition);
+  padding: 8px 12px;                   /* Espaçamento interno */
+  border-radius: 8px;                  /* Bordas levemente arredondadas */
+  border: 1px solid var(--primary-light); /* Borda azul clara */
+  background-color: #ffffff;           /* Fundo branco */
+  color: var(--text-dark);             /* Cor do texto */
+  font-size: 0.9rem;                   /* Tamanho da fonte (~14px) */
+  transition: var(--transition);       /* Transição suave */
+  width: 100%;                         /* Largura total */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Sombra interna */
 }
 
+/* Efeito quando selecionado/focado */
 .opcoes select:focus,
 .opcoes input:focus {
-  outline: none;
-  border-color: var(--primary-dark);
-  box-shadow: 0 0 0 2px rgba(41, 128, 185, 0.2);
+  outline: none;                       /* Remove contorno padrão */
+  border-color: var(--primary-dark);   /* Borda mais escura */
+  box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.2); /* Sombra externa azul */
 }
 
-/* Barra de acesso rápido */
-.barra-acesso {
-  position: fixed;
-  right: 25px;
-  bottom: 25px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  z-index: 999;
+/* ==================== BARRA DE ACESSO RÁPIDO ==================== */
+
+/* Título da seção CSS (apenas para organização) */
+
+.barra-navegacao {
+  position: fixed;       /* Fixa a barra na tela (não rola com a página) */
+  top: 20px;             /* Posiciona 20px do topo da tela */
+  left: 13.5%;             /* Alinha ao centro horizontalmente */
+  transform: translateX(-50%); /* Ajuste fino para centralizar perfeitamente */
+  display: flex;         /* Ativa o layout flexível */
+  justify-content: center; /* Centraliza os itens horizontalmente */
+  gap: 15px;             /* Espaço de 15px entre os itens */
+  z-index: 1000;         /* Garante que fique acima de outros elementos */
+  background-color: rgba(26, 77, 122, 0.9); /* Cor de fundo azul com 90% de opacidade */
+  padding: 12px 25px;    /* Espaçamento interno (12px topo/baixo, 25px laterais) */
+  border-radius: 30px;   /* Bordas completamente arredondadas */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+  backdrop-filter: blur(5px); /* Efeito de desfoque no fundo (estilo "vidro fosco") */
+  border: 1px solid rgba(255, 255, 255, 0.1); /* Borda sutil branca */
 }
 
-.barra-acesso a {
-  color: var(--text-light);
-  text-decoration: none;
-  font-size: 24px;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  text-align: center;
-  box-shadow: var(--shadow);
-  background-color: var(--primary-color);
-  transition: var(--transition);
+/* Estilo dos links da barra de navegação */
+.barra-navegacao a {
+  color: var(--text-light); /* Cor do texto (branco) */
+  text-decoration: none;    /* Remove sublinhado padrão */
+  font-size: 15px;         /* Tamanho da fonte */
+  font-weight: 600;        /* Peso da fonte (semi-negrito) */
+  padding: 0px 0px;      /* Espaçamento interno dos links */
+  border-radius: 20px;     /* Bordas arredondadas nos links */
+  display: flex;           /* Layout flexível para alinhar ícone e texto */
+  align-items: center;     /* Centraliza verticalmente */
+  gap: 0px;              /* Espaço entre ícone e texto */
+  transition: var(--transition); /* Efeito de transição suave */
+  position: relative;      /* Permite posicionar pseudo-elementos */
+  overflow: hidden;       /* Esconde qualquer conteúdo que ultrapasse */
 }
 
-.barra-acesso a:hover {
-  background-color: var(--primary-dark);
-  transform: scale(1.1);
+/* Efeito de brilho que passa nos links */
+.barra-navegacao a::before {
+  content: '';            /* Cria um pseudo-elemento */
+  position: absolute;     /* Posiciona absolutamente dentro do link */
+  top: 0; left: -100%;    /* Começa fora do elemento (esquerda) */
+  width: 100%; height: 100%; /* Ocupa todo o espaço do link */
+  /* Gradiente para criar efeito de brilho */
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.15), 
+    transparent);
+  transition: 0.6s;       /* Duração da animação */
 }
 
-/* Animação do fundo */
-@keyframes gradientBG {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+/* Efeito quando o mouse passa sobre os links */
+.barra-navegacao a:hover {
+  background-color: rgba(255, 255, 255, 0.15); /* Fundo branco semi-transparente */
+  transform: translateY(-2px); /* Move o link 2px para cima */
 }
 
-/* No arquivo loja.css, substitua a seção .barra-gerente por: */
-
-/* Barra do gerente */
-.barra-gerente {
-  position: fixed;
-  top: 65px;
-  right: 10px; /* Ajustado para não sobrepor o botão de login */
-  display: flex;
-  gap: 4.5px; /* Aumentei de 15px para 25px */
-  z-index: 1000;
+/* Animação do brilho ao passar o mouse */
+.barra-navegacao a:hover::before {
+  left: 100%;             /* Move o efeito de brilho para a direita */
 }
 
-.botao-gerente {
-  padding: 10px 20px;
-  border-radius: 100px;
-  background-color: var(--primary-dark);
-  color: var(--text-light);
-  text-decoration: none;
-  font-weight: bolder;
-  box-shadow: var(--shadow);
-  transition: var(--transition);
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  gap: 25px;
+/* Estilo do link ativo (página atual) */
+.barra-navegacao a.ativo {
+  background-color: var(--primary-light); /* Cor azul mais clara */
+  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.4); /* Sombra azulada */
 }
 
-.botao-gerente:hover {
-  background-color: var(--primary-color);
-  transform: translateY(-2px);
+/* Estilo dos ícones (adicionados via CSS) */
+.barra-navegacao a::after {
+  font-size: 1.2rem;      /* Tamanho dos ícones */
 }
 
-/* Ajuste para mobile */
+/* Ícone específico para o link da Loja */
+.barra-navegacao a[href*="loja.html"]::after {
+  content: '👟';          /* Emoji de tênis */
+}
+
+/* Ícone específico para o link do Carrinho */
+.barra-navegacao a[href*="carrinho.html"]::after {
+  content: '🛒';          /* Emoji de carrinho */
+}
+
+/* Ícone específico para o link de Pagamento */
+.barra-navegacao a[href*="pagamento.html"]::after {
+  content: '💸';          /* Emoji de dinheiro */
+}
+
+/* ==================== AJUSTES PARA MOBILE ==================== */
 @media (max-width: 768px) {
-  .barra-gerente {
-    right: 120px;
-    top: 15px;
-    gap: 15px; /* Um pouco menor no mobile, mas ainda maior que antes */
-  }
-
+  /* Modificações para telas menores que 768px */
   
-  h2 {
-    font-size: 2rem;
-  }
-  
-  .login-area {
-    right: 15px;
-    top: 15px;
+  .barra-navegacao {
+    top: auto;            /* Remove posição fixa no topo */
+    bottom: 20px;         /* Posiciona 20px do fundo */
+    width: 90%;           /* Largura de 90% da tela */
+    padding: 10px 15px;   /* Reduz o espaçamento interno */
+    gap: 5px;             /* Reduz espaço entre itens */
   }
   
-  .botao-login {
-    padding: 10px 16px;
-    font-size: 0.9rem;
+  /* Estilo dos links em mobile */
+  .barra-navegacao a {
+    font-size: 0.8rem;    /* Reduz tamanho da fonte */
+    padding: 8px 12px;    /* Reduz espaçamento interno */
+    flex-direction: column; /* Empilha ícone e texto verticalmente */
+    gap: 5px;             /* Reduz espaço entre ícone e texto */
   }
   
-  .barra-gerente {
-    right: 120px;
-    top: 15px;
-  }
-  
-  .barra-acesso {
-    right: 15px;
-    bottom: 15px;
-  }
-  
-  .barra-acesso a {
-    width: 45px;
-    height: 45px;
-    font-size: 22px;
+  /* Tamanho dos ícones em mobile */
+  .barra-navegacao a::after {
+    font-size: 1rem;      /* Reduz tamanho dos ícones */
   }
 }
+/* ==================== BARRA DO GERENTE ==================== */
+.barra-gerente {
+  position: fixed;       /* Fixa na tela */
+  top: 65px;             /* Distância do topo */
+  right: 20px;           /* Distância da direita */
+  display: flex;         /* Layout flexível */
+  gap: 10px;             /* Espaço entre botões */
+  z-index: 1000;         /* Camada de empilhamento */
+}
 
+/* Estilo dos botões do gerente */
+.botao-gerente {
+  padding: 10px 20px;     /* Espaçamento interno */
+  border-radius: 100px;    /* Bordas completamente arredondadas */
+  background-color: var(--primary-dark); /* Cor de fundo */
+  color: var(--text-light); /* Cor do texto (branco) */
+  text-decoration: none;    /* Remove sublinhado */
+  font-weight: bolder;      /* Texto em negrito */
+  box-shadow: var(--shadow); /* Sombra */
+  transition: var(--transition); /* Transição suave */
+  font-size: 0.9rem;        /* Tamanho da fonte (~14px) */
+  display: flex;            /* Layout flexível */
+  align-items: center;      /* Centraliza verticalmente */
+  gap: 8px;                 /* Espaço entre ícone e texto */
+  position: relative;       /* Para pseudo-elementos */
+  overflow: hidden;         /* Esconde transbordamento */
+}
+
+/* Efeito de brilho que passa no hover */
+.botao-gerente::after {
+  content: '';                          /* Pseudo-elemento */
+  position: absolute;                   /* Posicionamento absoluto */
+  top: 0; left: -100%;                  /* Começa fora do botão */
+  width: 100%; height: 100%;            /* Ocupa todo o botão */
+  /* Gradiente para efeito de brilho */
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: 0.5s;                     /* Duração da animação */
+}
+
+/* Animação do brilho ao passar o mouse */
+.botao-gerente:hover::after {
+  left: 100%;                           /* Move o brilho para a direita */
+}
+
+/* Efeitos ao passar o mouse */
+.botao-gerente:hover {
+  background-color: var(--primary-color); /* Cor mais clara */
+  transform: translateY(-2px);          /* Levanta levemente */
+}
+
+/* ==================== ANIMAÇÕES ==================== */
+/* Animação do gradiente de fundo */
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }   /* Começa à esquerda */
+  50% { background-position: 100% 50%; } /* Move para a direita */
+  100% { background-position: 0% 50%; } /* Volta à esquerda */
+}
+
+/* Animação de flutuação para os cards */
+@keyframes float {
+  0%, 100% { transform: translateY(0); } /* Posição normal */
+  50% { transform: translateY(-5px); }   /* Levanta levemente */
+}
+
+/* Aplica a animação de flutuação no hover */
+.card:hover {
+  animation: float 3s ease-in-out infinite; /* Repete infinitamente */
+}
+
+/* ==================== RESPONSIVIDADE (MOBILE) ==================== */
+@media (max-width: 768px) {
+  /* Ajustes para telas menores que 768px */
+  
+  /* Container de produtos */
+  .container {
+    grid-template-columns: 1fr;         /* Uma coluna apenas */
+    padding: 20px;                      /* Menos espaço interno */
+    gap: 25px;                          /* Menos espaço entre cards */
+    margin-top: 120px;                  /* Mais espaço no topo */
+  }
+  
+  /* Ajustes nos cards */
+  .card {
+    padding: 20px;                      /* Menos espaço interno */
+  }
+  
+  /* Imagens menores */
+  .card img {
+    height: 180px;                      /* Altura reduzida */
+  }
+  
+  /* Título principal menor */
+  h2 {
+    font-size: 2rem;                    /* Tamanho reduzido (~32px) */
+    margin: 20px 0;                     /* Menos margem */
+  }
+  
+  /* Botão comprar menor */
+  .add-button {
+    padding: 12px 20px;                 /* Espaçamento reduzido */
+  }
+  
+  /* Ajustes na área de login */
+  .login-area {
+    right: 15px;                        /* Mais próximo da borda */
+    top: 15px;                          /* Mais próximo do topo */
+  }
+  
+  /* Botão de login menor */
+  .botao-login {
+    padding: 10px 16px;                 /* Espaçamento reduzido */
+    font-size: 0.9rem;                  /* Fonte menor */
+  }
+  
+  /* Ajustes na barra do gerente */
+  .barra-gerente {
+    right: 15px;                        /* Mais próximo da borda */
+    top: 60px;                          /* Posição ajustada */
+    gap: 8px;                           /* Menos espaço entre botões */
+    flex-direction: column;             /* Organiza em coluna */
+  }
+  
+  /* Ajustes na barra de acesso */
+  .barra-acesso {
+    right: 15px;                        /* Mais próximo da borda */
+    bottom: 15px;                       /* Mais próximo do fundo */
+  }
+  
+  /* Ícones menores */
+  .barra-acesso a {
+    width: 45px; height: 45px;          /* Tamanho reduzido */
+    font-size: 22px;                    /* Ícone menor */
+  }
+}

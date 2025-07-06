@@ -1,82 +1,122 @@
-<!DOCTYPE html> <!-- Define o tipo do documento como HTML5 -->
-<html lang="pt-br"> <!-- Inicia o documento HTML e define o idioma como português do Brasil -->
-
+<!DOCTYPE html>
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8" /> <!-- Define a codificação de caracteres como UTF-8, suportando acentuação -->
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Responsividade: ajusta a largura conforme o dispositivo -->
-  <title>Pagamento - Loja de Tênis</title> <!-- Título exibido na aba do navegador -->
-
+  <title>Pagamento - Loja de Tênis</title>
+  
+  <!-- Importação de estilos -->
   <link rel="stylesheet" href="/PROJETO-2/pagamento/pagamento.css">
-  <!-- Importa o arquivo CSS externo com o estilo da página -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <!-- Importa ícones do Google Material Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 
-<body> <!-- Corpo do documento, onde ficam os conteúdos visíveis da página -->
+<body>
+  <!-- Barra de navegação -->
+  <nav class="barra-navegacao">
+    <a href="/PROJETO-2/loja/loja.html">Loja</a>
+    <a href="/PROJETO-2/carrinho/carrinho.html">Carrinho</a>
+    <a href="/PROJETO-2/pagamento/pagamento.html" class="ativo">Pagamento</a>
+  </nav>
 
-  <header> <!-- Cabeçalho da página -->
-    <h2>Pagamento</h2> <!-- Título principal exibido no topo -->
+  <!-- Cabeçalho -->
+  <header>
+    <h2>Finalize seu Pagamento</h2>
   </header>
 
-
-
-  <!-- Área de Login -->
+  <!-- Área de login -->
   <div class="login-area">
-    <button id="botao-login" class="botao-login" onclick="gerenciarLogin()">
+    <button id="botao-login" class="botao-login">
       <span id="login-icone">🔐</span>
       <span id="login-texto">Login</span>
     </button>
   </div>
 
+  <!-- Conteúdo principal -->
+  <main>
+    <!-- Resumo do pedido -->
+    <section id="resumoPagamento" class="resumo-destaque"></section>
 
-
-  <main> <!-- Conteúdo principal da página -->
-
-    <section id="resumoPagamento"></section> <!-- Seção onde será exibido o resumo do pedido (preenchido via JS) -->
-
-    <label for="formaPagamento">Forma de pagamento:</label><br /> <!-- Rótulo para o seletor de forma de pagamento -->
-
-    <select id="formaPagamento" onchange="verificarPagamento()">
-      <!-- Lista suspensa para escolher a forma de pagamento -->
-      <option disabled selected>Escolha sua forma de pagamento</option>
-      <!-- Opção inicial desabilitada como instrução -->
-      <option>Pix</option> <!-- Opção de pagamento via Pix -->
-      <option>Cartão de Crédito</option> <!-- Opção de pagamento com cartão -->
-      <option>Dinheiro</option> <!-- Opção de pagamento em dinheiro -->
-    </select>
-
-    <div> <!-- Agrupamento dos botões -->
-      <button class="botao" onclick="finalizarCompra()">Finalizar</button>
-      <button class="botao" onclick="location.href='/PROJETO-2/carrinho/carrinho.html'">Voltar</button>
+    <!-- Seleção de forma de pagamento -->
+    <div class="form-group">
+      <label for="formaPagamento">Forma de pagamento:</label>
+      <select id="formaPagamento">
+        <option disabled selected>Escolha sua forma de pagamento</option>
+        <option>Pix</option>
+        <option>Cartão de Crédito</option>
+        <option>Dinheiro</option>
+      </select>
     </div>
 
-    <section id="qrcode-area" class="qrcode-area" style="display: none;">
-      <!-- Seção oculta inicialmente, exibida se a forma for Pix -->
-      <h2>Escaneie o QR Code para pagar com PIX</h2> <!-- Instrução de pagamento -->
-      <div id="qrcode"></div> <!-- Local onde o QR Code será gerado dinamicamente via JavaScript -->
-    </section>
+    <!-- Botões de ação -->
+    <div class="botoes-acao">
+      <button class="botao botao-primario">
+        <i class="material-icons">check_circle</i> Finalizar
+      </button>
+      <button class="botao botao-secundario" id="botao-voltar">
+        <i class="material-icons">arrow_back</i> Voltar
+      </button>
+    </div>
 
+    <!-- Área do QR Code (para pagamentos PIX) -->
+    <section id="qrcode-area" class="qrcode-area">
+      <h2>Escaneie o QR Code para pagar com PIX</h2>
+      <div id="qrcode"></div>
+    </section>
   </main>
 
-  <footer> <!-- Rodapé da página -->
-    <p>&copy; 2025 Loja de Tênis</p> <!-- Texto do rodapé com direitos autorais -->
-  </footer>
-
-  <div class="barra-acesso">
-    <a href="/PROJETO-2/loja/loja.html" title="Loja">👟</a>
-    <a href="/PROJETO-2/carrinho/carrinho.html" title="Carrinho">🛒</a>
-    <a href="/PROJETO-2/pagamento/pagamento.html" title="Pagamento">💸</a>
+  <!-- Modal de Confirmação (inicialmente oculta) -->
+  <div id="modal-confirmacao" class="modal-confirmacao">
+    <div class="modal-content">
+      <h3>Confirmação de Pagamento</h3>
+      
+      <div class="modal-info">
+        <!-- Dinamicamente preenchido pelo JavaScript -->
+      </div>
+      
+      <div class="modal-botoes">
+        <button class="modal-botao modal-botao-cancelar">Cancelar</button>
+        <button class="modal-botao modal-botao-confirmar">Confirmar</button>
+      </div>
+    </div>
   </div>
 
-  <!-- Importação da biblioteca para gerar QR Codes (CDN externa) -->
+  <!-- Rodapé -->
+  <footer>
+    <div class="footer-content">
+      <p>&copy; 2025 Loja de Tênis</p>
+    </div>
+  </footer>
+
+  <!-- Loading overlay (inicialmente oculto) -->
+  <div id="loading-overlay" style="display: none;">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <p id="loading-message"></p>
+    </div>
+  </div>
+
+  <!-- Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-  <!-- Importação do script JavaScript local da página -->
   <script src="/PROJETO-2/pagamento/pagamento.js"></script>
-
-  <script src="/PROJETO-2/pagamento/login-utils.js"></script>
-
+  
+  <script>
+    // Inicialização dos event listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      // Botão de login
+      document.getElementById('botao-login').addEventListener('click', gerenciarLogin);
+      
+      // Botão de voltar
+      document.getElementById('botao-voltar').addEventListener('click', () => {
+        window.location.href = '/PROJETO-2/carrinho/carrinho.html';
+      });
+      
+      // Forma de pagamento
+      document.getElementById('formaPagamento').addEventListener('change', verificarPagamento);
+      
+      // Botão de finalizar compra
+      document.querySelector('.botao-primario').addEventListener('click', mostrarConfirmacaoPagamento);
+    });
+  </script>
 </body>
-
-</html> <!-- Fim do documento HTML -->
+</html>

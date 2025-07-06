@@ -21,7 +21,7 @@ async function carregarProdutos( ) {
         <img src="${produto.img}" alt="${produto.name}">
         <h3>${produto.name}</h3>
         <p class="price">R$ ${produto.price.toFixed(2)}</p>
-        <p class="descricao">${produto.features?.join(', ') || 'Sem descrição'}</p>
+        <p class="descricao">${produto.features?.join(" | ") || 'Sem descrição'}</p>
         <div class="opcoes">
           <label for="tamanho-${produto.id}">Tamanho:</label>
           <select id="tamanho-${produto.id}">
@@ -66,7 +66,7 @@ function adicionarAoCarrinhoLoja(id) {
     name: produto.name,
     price: produto.price,
     img: produto.img,
-    descricao: produto.features?.join(', ') || '',
+    descricao: produto.features?.join(' | ') || '',
     tamanho,
     cor,
     quantity: quantidade

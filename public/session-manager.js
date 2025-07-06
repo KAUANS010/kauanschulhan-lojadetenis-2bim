@@ -1,15 +1,17 @@
-// ======================= GERENCIADOR DE SESSÃO E INATIVIDADE =======================
+// ======================= GERENCIADOR DE SESSÃO ATUALIZADO =======================
 
 class SessionManager {
-  constructor( ) {
-    this.inactivityTimeout = 24 * 60 * 60 * 1000; // 24 horas em milissegundos
-    this.warningTimeout = 23 * 60 * 60 * 1000; // Aviso 1 hora antes (23 horas)
-    this.checkInterval = 5 * 60 * 1000; // Verifica a cada 5 minutos
+  constructor() {
+    this.inactivityTimeout = 30 * 60 * 1000; // ✅ REDUZIDO: 30 minutos
+    this.warningTimeout = 25 * 60 * 1000; // Aviso 5 minutos antes
+    this.checkInterval = 2 * 60 * 1000; // Verifica a cada 2 minutos
+    this.heartbeatInterval = 5 * 60 * 1000; // Heartbeat a cada 5 minutos
 
     this.lastActivity = Date.now();
     this.inactivityTimer = null;
     this.warningTimer = null;
     this.intervalTimer = null;
+    this.heartbeatTimer = null;
     this.warningShown = false;
 
     this.init();
@@ -19,11 +21,11 @@ class SessionManager {
     // Monitora atividade do usuário
     this.setupActivityListeners();
 
-    // Inicia o monitoramento
-    this.startMonitoring();
+    // Verifica sessão inicial
+    this.checkInitialSession();
 
-    // Verifica se há usuário logado
-    this.checkUserSession();
+    // Inicia monitoramento
+    this.startMonitoring();
   }
 
   setupActivityListeners() {
@@ -41,15 +43,23 @@ class SessionManager {
     this.warningShown = false;
 
     // Limpa timers existentes
+    this.clearTimers();
+
+    // Reinicia os timers apenas se há usuário logado
+    if (this.hasLocalUser()) {
+      this.startInactivityTimers();
+    }
+  }
+
+  clearTimers() {
     if (this.inactivityTimer) {
       clearTimeout(this.inactivityTimer);
+      this.inactivityTimer = null;
     }
     if (this.warningTimer) {
       clearTimeout(this.warningTimer);
+      this.warningTimer = null;
     }
-
-    // Reinicia os timers
-    this.startInactivityTimers();
   }
 
   startInactivityTimers() {
@@ -65,173 +75,276 @@ class SessionManager {
   }
 
   showInactivityWarning() {
-    if (this.warningShown || !this.isUserLoggedIn()) {
+    if (this.warningShown || !this.hasLocalUser()) {
       return;
     }
 
     this.warningShown = true;
-    const remainingTime = Math.ceil((this.inactivityTimeout - this.warningTimeout) / (60 * 1000)); // em minutos
+    const remainingTime = Math.ceil((this.inactivityTimeout - this.warningTimeout) / (60 * 1000));
 
     const continuar = confirm(
-      `Você ficará inativo em breve!\n\n` +
-      `Sua sessão expirará em ${remainingTime} minutos devido à inatividade.\n\n` +
-      `Clique em "OK" para continuar navegando ou "Cancelar" para fazer logout agora.`
+      `⚠️ Sessão expirando!\n\n` +
+      `Você ficará inativo em ${remainingTime} minutos.\n\n` +
+      `Clique em "OK" para continuar ou "Cancelar" para sair.`
     );
 
     if (continuar) {
-      // Usuário quer continuar, atualiza atividade
       this.updateActivity();
     } else {
-      // Usuário quer fazer logout
       this.performManualLogout();
     }
   }
 
   async performAutoLogout() {
-    if (!this.isUserLoggedIn()) {
+    if (!this.hasLocalUser()) {
       return;
     }
 
-    console.log('Realizando logout automático por inatividade');
+    console.log('🔄 Executando logout automático por inatividade');
 
     try {
-      const baseUrl = window.location.origin; // Adicionado
-      await fetch(`${baseUrl}/logout`, { // Modificado
-        method: 'POST',
-        credentials: 'include'
-      });
+      await this.executeLogout();
+      alert('Sua sessão expirou devido à inatividade.');
     } catch (error) {
-      console.error('Erro ao fazer logout no servidor:', error);
+      console.error('Erro no logout automático:', error);
     }
 
-    // Remove dados locais
-    localStorage.removeItem('usuario');
-
-    // Mostra mensagem e redireciona
-    alert('Sua sessão expirou devido à inatividade. Você será redirecionado para a página de login.');
-    // Ajuste o caminho para o login.html se necessário, dependendo da estrutura de pastas
-    window.location.href = '/LOGIN/login.html';
+    this.redirectToLogin();
   }
 
   async performManualLogout() {
-    if (!this.isUserLoggedIn()) {
+    if (!this.hasLocalUser()) {
       return;
     }
 
     try {
-      const baseUrl = window.location.origin; // Adicionado
-      await fetch(`${baseUrl}/logout`, { // Modificado
+      await this.executeLogout();
+      alert('Logout realizado com sucesso!');
+    } catch (error) {
+      console.error('Erro no logout manual:', error);
+    }
+
+    this.redirectToLogin();
+  }
+
+  async executeLogout() {
+    try {
+      const baseUrl = window.location.origin;
+      const response = await fetch(`${baseUrl}/logout`, {
         method: 'POST',
         credentials: 'include'
       });
+
+      if (!response.ok) {
+        throw new Error('Erro na resposta do servidor');
+      }
+
+      console.log('✅ Logout no servidor realizado');
     } catch (error) {
-      console.error('Erro ao fazer logout no servidor:', error);
+      console.error('❌ Erro ao fazer logout no servidor:', error);
     }
 
+    // ✅ LIMPA DADOS LOCAIS
+    this.clearLocalData();
+  }
+
+  clearLocalData() {
     localStorage.removeItem('usuario');
-    alert('Logout realizado com sucesso!');
-    // Ajuste o caminho para o login.html se necessário, dependendo da estrutura de pastas
-    window.location.href = '/LOGIN/login.html';
+    
+    // ✅ LIMPA TAMBÉM DADOS DO CARRINHO se necessário
+    // localStorage.removeItem('carrinho');
+    // localStorage.removeItem('valorTotal');
+    
+    console.log('🧹 Dados locais limpos');
+  }
+
+  redirectToLogin() {
+    // Para evitar loop infinito, verifica se já não está na página de login
+    if (!window.location.pathname.includes('login')) {
+      window.location.href = '/LOGIN/login.html';
+    }
   }
 
   startMonitoring() {
-    // Verifica periodicamente se a sessão ainda é válida
+    // ✅ HEARTBEAT: Verifica se a sessão ainda é válida no servidor
+    this.heartbeatTimer = setInterval(() => {
+      this.heartbeat();
+    }, this.heartbeatInterval);
+
+    // Verifica validade da sessão periodicamente
     this.intervalTimer = setInterval(() => {
       this.checkSessionValidity();
     }, this.checkInterval);
 
-    // Inicia os timers de inatividade se há usuário logado
-    if (this.isUserLoggedIn()) {
+    // Inicia timers de inatividade se há usuário logado
+    if (this.hasLocalUser()) {
       this.startInactivityTimers();
     }
   }
 
-  async checkSessionValidity() {
-    if (!this.isUserLoggedIn()) {
+  async heartbeat() {
+    if (!this.hasLocalUser()) {
       return;
     }
 
     try {
-      const baseUrl = window.location.origin; // Adicionado
-      const response = await fetch(`${baseUrl}/check-session`, { // Modificado
+      const baseUrl = window.location.origin;
+      const response = await fetch(`${baseUrl}/check-session`, {
         method: 'GET',
         credentials: 'include'
       });
 
       if (!response.ok) {
-        // Sessão inválida no servidor
-        console.log('Sessão inválida no servidor, fazendo logout local');
-        localStorage.removeItem('usuario');
+        throw new Error('Sessão inválida');
+      }
 
-        // Atualiza interface se possível
-        if (typeof atualizarBotaoLogin === 'function') {
-          atualizarBotaoLogin(null);
-        }
-
-        // Redireciona para login se não estiver já lá
-        if (!window.location.pathname.includes('login')) {
-          alert('Sua sessão expirou. Você será redirecionado para a página de login.');
-          // Ajuste o caminho para o login.html se necessário, dependendo da estrutura de pastas
-          window.location.href = '/LOGIN/login.html';
-        }
+      const data = await response.json();
+      
+      if (!data.logado) {
+        console.log('💔 Heartbeat: Sessão perdida no servidor');
+        this.handleLostSession();
+      } else {
+        console.log('💓 Heartbeat: Sessão válida');
       }
     } catch (error) {
-      console.error('Erro ao verificar sessão:', error);
+      console.error('❌ Erro no heartbeat:', error);
+      this.handleLostSession();
     }
   }
 
-  checkUserSession() {
-    const usuario = localStorage.getItem('usuario');
-    if (usuario) {
-      // Há usuário logado, inicia monitoramento
-      this.startInactivityTimers();
+  async checkSessionValidity() {
+    if (!this.hasLocalUser()) {
+      return;
+    }
+
+    try {
+      const baseUrl = window.location.origin;
+      const response = await fetch(`${baseUrl}/check-session`, {
+        method: 'GET',
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        this.handleLostSession();
+        return;
+      }
+
+      const data = await response.json();
+      
+      if (!data.logado) {
+        this.handleLostSession();
+      }
+    } catch (error) {
+      console.error('❌ Erro ao verificar sessão:', error);
+      this.handleLostSession();
     }
   }
 
-  isUserLoggedIn() {
+  handleLostSession() {
+    console.log('🔄 Sessão perdida, limpando dados locais');
+    
+    this.clearLocalData();
+    this.clearTimers();
+    
+    // Atualiza interface se possível
+    if (typeof atualizarBotaoLogin === 'function') {
+      atualizarBotaoLogin(null);
+    }
+
+    // Redireciona apenas se não estiver na página de login
+    if (!window.location.pathname.includes('login')) {
+      alert('Sua sessão expirou. Faça login novamente.');
+      this.redirectToLogin();
+    }
+  }
+
+  async checkInitialSession() {
+    const localUser = localStorage.getItem('usuario');
+    
+    if (localUser) {
+      // Verifica se a sessão ainda é válida no servidor
+      try {
+        const baseUrl = window.location.origin;
+        const response = await fetch(`${baseUrl}/check-session`, {
+          method: 'GET',
+          credentials: 'include'
+        });
+
+        if (!response.ok) {
+          throw new Error('Sessão inválida');
+        }
+
+        const data = await response.json();
+        
+        if (!data.logado) {
+          console.log('❌ Sessão local encontrada mas inválida no servidor');
+          this.clearLocalData();
+        } else {
+          console.log('✅ Sessão válida encontrada');
+          this.startInactivityTimers();
+        }
+      } catch (error) {
+        console.error('❌ Erro ao verificar sessão inicial:', error);
+        this.clearLocalData();
+      }
+    }
+  }
+
+  hasLocalUser() {
     return localStorage.getItem('usuario') !== null;
   }
 
-  // Método para ser chamado quando usuário faz login
+  // ✅ MÉTODO PARA SER CHAMADO QUANDO USUÁRIO FAZ LOGIN
   onUserLogin() {
+    console.log('👤 Usuário logado, iniciando monitoramento');
     this.lastActivity = Date.now();
     this.warningShown = false;
     this.startInactivityTimers();
   }
 
-  // Método para ser chamado quando usuário faz logout
+  // ✅ MÉTODO PARA SER CHAMADO QUANDO USUÁRIO FAZ LOGOUT
   onUserLogout() {
-    if (this.inactivityTimer) {
-      clearTimeout(this.inactivityTimer);
-    }
-    if (this.warningTimer) {
-      clearTimeout(this.warningTimer);
-    }
+    console.log('👋 Usuário deslogado, parando monitoramento');
+    this.clearTimers();
     this.warningShown = false;
   }
 
-  // Método para limpar todos os timers (útil para cleanup)
+  // ✅ MÉTODO PARA LIMPAR TODOS OS TIMERS
   destroy() {
-    if (this.inactivityTimer) {
-      clearTimeout(this.inactivityTimer);
-    }
-    if (this.warningTimer) {
-      clearTimeout(this.warningTimer);
-    }
+    this.clearTimers();
+    
     if (this.intervalTimer) {
       clearInterval(this.intervalTimer);
+      this.intervalTimer = null;
     }
+    
+    if (this.heartbeatTimer) {
+      clearInterval(this.heartbeatTimer);
+      this.heartbeatTimer = null;
+    }
+    
+    console.log('🧹 SessionManager destruído');
   }
 }
 
-// Inicializa o gerenciador de sessão quando o DOM estiver pronto
+// ✅ INICIALIZAÇÃO
 document.addEventListener('DOMContentLoaded', function() {
-  window.sessionManager = new SessionManager();
+  if (typeof window !== 'undefined') {
+    window.sessionManager = new SessionManager();
+  }
 });
 
-// Limpa timers quando a página é descarregada
+// ✅ LIMPEZA
 window.addEventListener('beforeunload', function() {
   if (window.sessionManager) {
     window.sessionManager.destroy();
+  }
+});
+
+// ✅ DETECTA QUANDO A PÁGINA FICA VISÍVEL NOVAMENTE
+document.addEventListener('visibilitychange', function() {
+  if (!document.hidden && window.sessionManager) {
+    // Página ficou visível, verifica sessão
+    window.sessionManager.checkSessionValidity();
   }
 });

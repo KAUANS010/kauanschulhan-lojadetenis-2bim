@@ -217,6 +217,36 @@ function pagarPIX() {
   }
 }
 
+// ======================= MODAL DE CONFIRMAÇÃO =======================
+
+function mostrarConfirmacaoPagamento() {
+  const modal = document.getElementById('modal-confirmacao');
+  const modalInfo = document.querySelector('.modal-info');
+  const formaPagamento = document.getElementById("formaPagamento").value;
+  const valorTotal = parseFloat(localStorage.getItem('valorTotal')) || 0;
+  const usuario = JSON.parse(localStorage.getItem('usuario'));
+
+  if (modal && modalInfo) {
+    modalInfo.innerHTML = `
+      <p><strong>Forma de Pagamento:</strong> ${formaPagamento}</p>
+      <p><strong>Valor Total:</strong> R$ ${valorTotal.toFixed(2)}</p>
+      ${usuario ? `<p><strong>Cliente:</strong> ${usuario.nome}</p>` : ''}
+    `;
+    
+    modal.style.display = 'flex';
+
+    // Configura os botões do modal
+    document.querySelector('.modal-botao-confirmar').onclick = () => {
+      modal.style.display = 'none';
+      finalizarCompra();
+    };
+
+    document.querySelector('.modal-botao-cancelar').onclick = () => {
+      modal.style.display = 'none';
+    };
+  }
+}
+
 // ======================= FINALIZAÇÃO DA COMPRA - APRIMORADA =======================
 
 function finalizarCompra() {

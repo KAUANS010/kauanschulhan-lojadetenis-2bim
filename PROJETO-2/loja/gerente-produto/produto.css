@@ -1,223 +1,449 @@
+/* ==================== VARIÁVEIS DE CORES E ESTILOS ==================== */
+:root {
+  /* Cores principais - paleta azul/verde */
+  --primary-color: #2980b9;       /* Azul primário */
+  --primary-dark: #1c5980;        /* Azul mais escuro */
+  --primary-light: #3498db;       /* Azul mais claro */
+  --secondary-color: #27ae60;     /* Verde para ações positivas */
+  --secondary-dark: #229954;      /* Verde mais escuro */
+  --danger-color: #e74c3c;        /* Vermelho para ações perigosas */
+  --danger-dark: #c0392b;         /* Vermelho mais escuro */
+  
+  /* Tons de cinza */
+  --light-gray: #ecf0f1;          /* Cinza muito claro */
+  --medium-gray: #bdc3c7;         /* Cinza médio */
+  --dark-gray: #7f8c8d;           /* Cinza escuro */
+  
+  /* Cores de texto */
+  --text-color: #2c3e50;          /* Cor principal para texto */
+  
+  /* Efeitos visuais */
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Sombra padrão */
+  
+  /* Transições e animações */
+  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Curva de transição suave */
+}
+
+/* ==================== ESTILOS GERAIS ==================== */
 body {
-  background-color: #f0f3f5;
-  font-family: Arial, sans-serif;
-  padding: 20px;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; /* Fontes modernas */
+  padding: 20px;                       /* Espaçamento interno */
+  min-height: 100vh;                   /* Altura mínima da tela inteira */
+  display: flex;                       /* Layout flexível */
+  align-items: center;                 /* Centraliza verticalmente */
+  justify-content: center;             /* Centraliza horizontalmente */
+  
+  /* Gradiente animado sofisticado */
+  background: linear-gradient(-45deg, 
+    #0f2027,  /* Azul petróleo escuro */
+    #203a43,  /* Azul petróleo médio */
+    #2c5364,  /* Azul petróleo claro */
+    #3a6b8a   /* Azul médio */
+  );
+  background-size: 400% 400%;          /* Permite a animação do gradiente */
+  animation: gradientBG 15s ease infinite; /* Animação contínua */
+  color: white;                        /* Cor do texto padrão */
 }
 
+/* Animação do gradiente de fundo */
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }  /* Posição inicial */
+  50% { background-position: 100% 50%; } /* Posição intermediária */
+  100% { background-position: 0% 50%; } /* Volta à posição inicial */
+}
+
+/* ==================== CONTAINER PRINCIPAL ==================== */
 .container {
-  max-width: 600px;
-  margin: auto;
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  max-width: 700px;                    /* Largura máxima */
+  width: 100%;                         /* Largura responsiva */
+  margin: 20px auto;                   /* Centraliza horizontalmente */
+  background: rgba(255, 255, 255, 0.95); /* Fundo branco semi-transparente */
+  backdrop-filter: blur(8px);          /* Efeito de desfoque (vidro fosco) */
+  -webkit-backdrop-filter: blur(8px);  /* Suporte para Safari */
+  padding: 40px;                       /* Espaçamento interno generoso */
+  border-radius: 16px;                 /* Bordas arredondadas */
+  box-shadow: var(--shadow);           /* Sombra sutil */
+  position: relative;                  /* Permite posicionar elementos filhos */
+  overflow: hidden;                    /* Esconde conteúdo que ultrapasse */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Borda sutil */
 }
 
-input, button {
-  width: 100%;
-  padding: 10px;
-  margin: 8px 0;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-  font-size: 14px;
+/* Barra decorativa no topo do container */
+.container::before {
+  content: '';                         /* Pseudo-elemento */
+  position: absolute;                  /* Posicionamento absoluto */
+  top: 0; left: 0;                     /* Alinhado no topo */
+  width: 100%; height: 8px;            /* Largura total, altura pequena */
+  background: linear-gradient(90deg, 
+    var(--primary-color),              /* Gradiente azul para verde */
+    var(--secondary-color)
+  );
 }
 
+/* ==================== FORMULÁRIOS E INPUTS ==================== */
+input, button, textarea, select {
+  width: 100%;                         /* Largura total */
+  padding: 12px 15px;                  /* Espaçamento interno confortável */
+  margin: 10px 0;                      /* Margem vertical */
+  border-radius: 8px;                  /* Bordas arredondadas */
+  border: 2px solid var(--light-gray); /* Borda sutil */
+  box-sizing: border-box;              /* Modelo de caixa consistente */
+  font-size: 15px;                     /* Tamanho de fonte legível */
+  transition: var(--transition);       /* Transição suave para interações */
+}
+
+/* Estilo quando o input está em foco */
+input:focus, textarea:focus {
+  outline: none;                       /* Remove contorno padrão */
+  border-color: var(--primary-color);  /* Borda azul */
+  box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.2); /* Sombra de foco */
+}
+
+/* ==================== BOTÕES ==================== */
 button {
-  background-color: #2980b9;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  background-color: var(--primary-color); /* Cor azul padrão */
+  color: white;                        /* Texto branco */
+  font-weight: 600;                    /* Peso da fonte */
+  cursor: pointer;                     /* Cursor de ponteiro */
+  transition: var(--transition);       /* Transição suave */
+  letter-spacing: 0.5px;               /* Espaçamento entre letras */
+  text-transform: uppercase;           /* Texto em maiúsculas */
+  font-size: 14px;                     /* Tamanho da fonte */
+  border: none;                        /* Remove borda padrão */
 }
 
+/* Efeito hover para botões */
 button:hover:not(:disabled) {
-  background-color: #1c5980;
-  transform: translateY(-1px);
+  background-color: var(--primary-dark); /* Azul mais escuro */
+  transform: translateY(-2px);         /* Levanta levemente */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Sombra mais pronunciada */
 }
 
+/* Efeito ao clicar no botão */
+button:active:not(:disabled) {
+  transform: translateY(0);            /* Volta à posição original */
+}
+
+/* Estilo para botões desabilitados */
 button:disabled {
-  background-color: #bdc3c7;
-  cursor: not-allowed;
-  transform: none;
+  background-color: var(--medium-gray); /* Cinza médio */
+  cursor: not-allowed;                /* Cursor indicando não permitido */
+  transform: none;                    /* Sem transformação */
+  opacity: 0.7;                       /* Opacidade reduzida */
 }
 
+/* ==================== BOTÃO VOLTAR ==================== */
 .botao-voltar {
-  display: inline-block;
-  margin-top: 20px;
-  text-decoration: none;
-  background: #95a5a6;
-  padding: 10px 15px;
-  border-radius: 6px;
-  color: white;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
+  display: inline-flex;                /* Layout flexível inline */
+  align-items: center;                 /* Centraliza verticalmente */
+  justify-content: center;             /* Centraliza horizontalmente */
+  margin-top: 25px;                    /* Espaço acima */
+  text-decoration: none;               /* Remove sublinhado */
+  background: var(--dark-gray);        /* Cor cinza escuro */
+  padding: 12px 20px;                  /* Espaçamento interno */
+  border-radius: 8px;                  /* Bordas arredondadas */
+  color: white;                        /* Texto branco */
+  font-weight: 600;                    /* Peso da fonte */
+  transition: var(--transition);       /* Transição suave */
+  gap: 8px;                            /* Espaço entre elementos filhos */
 }
 
+/* Efeito hover para o botão voltar */
 .botao-voltar:hover {
-  background-color: #7f8c8d;
+  background-color: #6c7a7d;          /* Cinza mais claro */
+  transform: translateY(-2px);         /* Levanta levemente */
+  box-shadow: var(--shadow);           /* Adiciona sombra */
 }
 
-/* Estilos para a seção de upload */
+/* ==================== SEÇÃO DE UPLOAD ==================== */
 .upload-section {
-  margin: 15px 0;
-  padding: 20px;
-  border: 2px dashed #bdc3c7;
-  border-radius: 8px;
-  background-color: #f8f9fa;
-  transition: border-color 0.3s ease;
+  margin: 20px 0;                      /* Margem vertical */
+  padding: 25px;                       /* Espaçamento interno */
+  border: 2px dashed var(--medium-gray); /* Borda tracejada */
+  border-radius: 12px;                 /* Bordas arredondadas */
+  background-color: rgba(255, 255, 255, 0.85); /* Fundo semi-transparente */
+  transition: var(--transition);       /* Transição suave */
+  position: relative;                  /* Para posicionar elementos filhos */
 }
 
+/* Efeito hover na seção de upload */
 .upload-section:hover {
-  border-color: #27ae60;
+  border-color: var(--secondary-color); /* Borda verde */
+  background-color: rgba(255, 255, 255, 0.95); /* Fundo mais opaco */
+  transform: translateY(-2px);         /* Levanta levemente */
 }
 
+/* Estilo para labels na seção de upload */
 .upload-section label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: bold;
-  color: #2c3e50;
-  font-size: 14px;
+  display: block;                      /* Ocupa toda a largura */
+  margin-bottom: 10px;                 /* Espaço abaixo */
+  font-weight: 600;                    /* Peso da fonte */
+  color: var(--text-color);            /* Cor do texto */
+  font-size: 15px;                     /* Tamanho da fonte */
 }
 
+/* Container para o botão de upload */
 .file-upload {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
+  display: flex;                       /* Layout flexível */
+  gap: 12px;                           /* Espaço entre elementos */
+  margin-top: 15px;                    /* Espaço acima */
 }
 
+/* Botão para selecionar arquivo */
 .btn-selecionar {
-  background-color: #27ae60;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+  background-color: var(--secondary-color); /* Verde */
+  flex: 1;                             /* Ocupa espaço disponível */
+  display: flex;                       /* Layout flexível */
+  align-items: center;                 /* Centraliza verticalmente */
+  justify-content: center;             /* Centraliza horizontalmente */
+  gap: 10px;                           /* Espaço entre ícone e texto */
+  border-radius: 8px;                  /* Bordas arredondadas */
+  padding: 12px;                       /* Espaçamento interno */
 }
 
+/* Efeito hover para o botão de seleção */
 .btn-selecionar:hover:not(:disabled) {
-  background-color: #229954;
+  background-color: var(--secondary-dark); /* Verde mais escuro */
 }
 
-.btn-selecionar:disabled {
-  background-color: #95a5a6;
-  cursor: not-allowed;
-}
-
+/* ==================== PREVIEW DE IMAGEM ==================== */
 #preview-container {
-  text-align: center;
-  margin-top: 15px;
-  padding: 15px;
-  background-color: white;
-  border-radius: 8px;
-  border: 1px solid #ecf0f1;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  animation: fadeIn 0.3s ease;
+  text-align: center;                  /* Centraliza conteúdo */
+  margin-top: 20px;                    /* Espaço acima */
+  padding: 20px;                       /* Espaçamento interno */
+  background-color: white;             /* Fundo branco */
+  border-radius: 12px;                 /* Bordas arredondadas */
+  border: 1px solid var(--light-gray); /* Borda sutil */
+  box-shadow: var(--shadow);           /* Sombra sutil */
+  animation: fadeIn 0.4s ease-out;     /* Animação de entrada */
 }
 
+/* Animação de fade-in para o preview */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(15px); } /* Começa transparente e abaixo */
+  to { opacity: 1; transform: translateY(0); }     /* Termina visível na posição normal */
 }
 
+/* Estilo da imagem de preview */
 #preview-image {
-  display: block;
-  margin: 0 auto 10px auto;
-  border: 2px solid #ecf0f1;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  transition: transform 0.2s ease;
+  display: block;                      /* Remove espaço abaixo da imagem */
+  margin: 0 auto 15px auto;            /* Centraliza e adiciona espaço abaixo */
+  border: 2px solid var(--light-gray); /* Borda sutil */
+  border-radius: 8px;                  /* Bordas arredondadas */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Sombra sutil */
+  transition: var(--transition);       /* Transição suave */
+  max-width: 100%;                     /* Largura máxima */
+  height: auto;                        /* Altura automática */
+  object-fit: contain;                 /* Mantém proporção sem cortar */
 }
 
+/* Efeito hover na imagem de preview */
 #preview-image:hover {
-  transform: scale(1.05);
+  transform: scale(1.03);              /* Aumenta levemente */
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15); /* Sombra mais pronunciada */
 }
 
+/* Texto com nome do arquivo */
 #file-name {
-  color: #7f8c8d;
-  font-size: 0.9em;
-  margin: 0;
-  font-style: italic;
+  color: var(--dark-gray);             /* Cor cinza escuro */
+  font-size: 0.95em;                   /* Tamanho de fonte menor */
+  margin: 10px 0 0;                    /* Espaçamento */
+  font-style: italic;                  /* Estilo itálico */
 }
 
-/* Input readonly styling */
+/* ==================== ESTILOS ESPECIAIS ==================== */
+/* Inputs readonly */
 input[readonly] {
-  background-color: #ecf0f1;
-  color: #2c3e50;
-  cursor: not-allowed;
+  background-color: var(--light-gray);  /* Fundo cinza claro */
+  color: var(--text-color);            /* Cor do texto */
+  cursor: not-allowed;                 /* Cursor indicando não permitido */
 }
 
-/* Estilo para campos obrigatórios */
+/* Campos obrigatórios */
 input[required] {
-  border-left: 3px solid #e74c3c;
+  border-left: 4px solid var(--danger-color); /* Borda vermelha à esquerda */
+  background-color: #fff9f9;           /* Fundo vermelho muito claro */
 }
 
+/* Campos obrigatórios preenchidos corretamente */
 input[required]:valid {
-  border-left: 3px solid #27ae60;
+  border-left: 4px solid var(--secondary-color); /* Borda verde à esquerda */
+  background-color: #f9fff9;           /* Fundo verde muito claro */
 }
 
-/* Animação de sucesso */
+/* Mensagem de feedback de sucesso */
 .success-feedback {
-  background-color: #d5f4e6;
-  border: 1px solid #27ae60;
-  color: #155724;
-  padding: 10px;
-  border-radius: 4px;
-  margin: 10px 0;
-  animation: fadeIn 0.3s ease;
+  background-color: #e8f5e9;           /* Fundo verde claro */
+  border: 1px solid var(--secondary-color); /* Borda verde */
+  color: #155724;                      /* Texto verde escuro */
+  padding: 15px;                       /* Espaçamento interno */
+  border-radius: 8px;                  /* Bordas arredondadas */
+  margin: 15px 0;                      /* Margem vertical */
+  animation: fadeIn 0.4s ease-out;     /* Animação de entrada */
 }
 
-/* Responsividade */
-@media (max-width: 600px) {
-  .container {
-    padding: 20px;
-    margin: 10px;
-  }
-  
-  .file-upload {
-    flex-direction: column;
-  }
-  
-  .btn-selecionar {
-    width: 100%;
-  }
-  
-  #preview-image {
-    max-width: 150px;
-    max-height: 150px;
-  }
-}
-
-/* Melhorias visuais gerais */
-h2, h3 {
-  color: #2c3e50;
-  margin-bottom: 20px;
-}
-
-h2 {
-  text-align: center;
-  border-bottom: 2px solid #3498db;
-  padding-bottom: 10px;
-}
-
-form {
-  margin-top: 20px;
-}
-
+/* ==================== RESULTADO DA BUSCA ==================== */
 #resultado-produto {
-  margin: 20px 0;
-  padding: 15px;
-  background-color: #f8f9fa;
-  border-radius: 6px;
+  margin: 25px 0;                      /* Margem vertical */
+  padding: 20px;                       /* Espaçamento interno */
+  background-color: rgba(255, 255, 255, 0.9); /* Fundo semi-transparente */
+  border-radius: 12px;                 /* Bordas arredondadas */
+  box-shadow: var(--shadow);           /* Sombra sutil */
+  border: 1px solid var(--light-gray); /* Borda sutil */
+  transition: var(--transition);       /* Transição suave */
 }
 
+/* Efeito hover no resultado da busca */
+#resultado-produto:hover {
+  transform: translateY(-3px);         /* Levanta levemente */
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15); /* Sombra mais pronunciada */
+}
+
+/* Parágrafos dentro do resultado */
 #resultado-produto p {
-  margin: 0 0 10px 0;
-  color: #2c3e50;
+  margin: 0 0 12px 0;                  /* Margem inferior */
+  color: var(--text-color);            /* Cor do texto */
+  line-height: 1.6;                    /* Espaçamento entre linhas */
 }
 
+/* Botões dentro do resultado */
 #resultado-produto button {
-  width: auto;
-  margin-right: 10px;
-  padding: 8px 15px;
+  width: auto;                         /* Largura automática */
+  margin-right: 12px;                  /* Espaço à direita */
+  padding: 10px 18px;                  /* Espaçamento interno */
+  border-radius: 8px;                  /* Bordas arredondadas */
+}
+
+/* Primeiro botão (Editar) */
+#resultado-produto button:first-of-type {
+  background-color: var(--primary-color); /* Azul */
+}
+
+/* Último botão (Deletar) */
+#resultado-produto button:last-of-type {
+  background-color: var(--danger-color); /* Vermelho */
+}
+
+/* Efeito hover para botões no resultado */
+#resultado-produto button:hover:not(:disabled) {
+  transform: translateY(-2px);         /* Levanta levemente */
+}
+
+/* ==================== TÍTULOS ==================== */
+h2, h3 {
+  color: var(--text-color);            /* Cor do texto */
+  margin-bottom: 25px;                 /* Espaço abaixo */
+  position: relative;                  /* Para pseudo-elementos */
+}
+
+/* Título principal */
+h2 {
+  text-align: center;                  /* Centralizado */
+  padding-bottom: 15px;                /* Espaço abaixo */
+  font-size: 28px;                     /* Tamanho grande */
+  font-weight: 700;                    /* Negrito */
+}
+
+/* Linha decorativa abaixo do título principal */
+h2::after {
+  content: '';                         /* Pseudo-elemento */
+  position: absolute;                  /* Posicionamento absoluto */
+  bottom: 0; left: 50%;                /* Centralizado horizontalmente */
+  transform: translateX(-50%);         /* Ajuste fino de centralização */
+  width: 100px; height: 4px;           /* Dimensões */
+  background: linear-gradient(90deg,   /* Gradiente azul-verde */
+    var(--primary-color), 
+    var(--secondary-color)
+  );
+  border-radius: 2px;                  /* Bordas levemente arredondadas */
+}
+
+/* Subtítulo */
+h3 {
+  font-size: 22px;                     /* Tamanho médio */
+  padding-bottom: 10px;                /* Espaço abaixo */
+  border-bottom: 2px solid var(--light-gray); /* Linha inferior */
+}
+
+/* ==================== FORMULÁRIO ==================== */
+form {
+  margin-top: 30px;                    /* Espaço acima */
+}
+
+/* ==================== EFEITOS ESPECIAIS ==================== */
+/* Efeito de onda ao clicar em botões */
+button:not(:disabled) {
+  position: relative;                  /* Para pseudo-elementos */
+  overflow: hidden;                    /* Esconde transbordamento */
+}
+
+/* Efeito de onda (circulo que se expande) */
+button:not(:disabled):after {
+  content: "";                         /* Pseudo-elemento */
+  display: block;                      /* Comportamento de bloco */
+  position: absolute;                  /* Posicionamento absoluto */
+  width: 100%; height: 100%;           /* Ocupa todo o botão */
+  top: 0; left: 0;                     /* Alinhado no topo/esquerda */
+  pointer-events: none;                /* Não interfere com cliques */
+  /* Gradiente radial para efeito de onda */
+  background-image: radial-gradient(circle, rgba(255,255,255,0.8) 10%, transparent 10.01%);
+  background-repeat: no-repeat;        /* Sem repetição */
+  background-position: 50%;            /* Centralizado */
+  transform: scale(10, 10);            /* Escala inicial grande */
+  opacity: 0;                          /* Inicialmente transparente */
+  transition: transform .5s, opacity 1s; /* Transição suave */
+}
+
+/* Efeito ao clicar (ativa a onda) */
+button:not(:disabled):active:after {
+  transform: scale(0, 0);              /* Reduz a escala */
+  opacity: .3;                         /* Torna visível */
+  transition: 0s;                      /* Transição instantânea */
+}
+
+/* ==================== RESPONSIVIDADE ==================== */
+@media (max-width: 768px) {
+  /* Ajustes para tablets */
+  .container {
+    padding: 30px;                     /* Menos espaçamento interno */
+    margin: 15px;                      /* Menos margem */
+    border-radius: 12px;               /* Bordas menos arredondadas */
+  }
+  
+  body {
+    padding: 15px;                     /* Menos espaçamento */
+    animation: gradientBG 25s ease infinite; /* Animação mais lenta */
+  }
+  
+  /* Títulos menores */
+  h2 { font-size: 24px; }
+  h3 { font-size: 20px; }
+}
+
+@media (max-width: 480px) {
+  /* Ajustes para mobile */
+  .container {
+    padding: 20px;                     /* Espaçamento mínimo */
+  }
+  
+  /* Remove animação em dispositivos muito pequenos */
+  body {
+    background: linear-gradient(-45deg, #1a3a4a, #2a4e62, #3a6b8a);
+    animation: none;
+  }
+  
+  /* Layout vertical para upload */
+  .file-upload {
+    flex-direction: column;            /* Empilha elementos */
+  }
+  
+  /* Botões em largura total */
+  .btn-selecionar, button {
+    width: 100%;                       /* Ocupa toda a largura */
+  }
+  
+  /* Imagem de preview menor */
+  #preview-image {
+    max-width: 180px;                  /* Largura máxima reduzida */
+  }
 }

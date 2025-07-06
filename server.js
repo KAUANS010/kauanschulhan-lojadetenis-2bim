@@ -32,16 +32,24 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
+// ======================= CONFIGURAÇÃO DE SESSÃO ATUALIZADA =======================
+
 app.use(session({
   secret: 'sua_chave_secreta_aqui',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    maxAge: 24 * 60 * 60 * 1000,
-    expires: false
+    // ✅ MUDANÇA PRINCIPAL: Remove maxAge e expires
+    // Isso faz com que seja uma "session cookie" que expira ao fechar o navegador
+    httpOnly: true,        // Protege contra XSS
+    secure: false,         // false para desenvolvimento (HTTP), true para produção (HTTPS)
+    sameSite: 'lax'        // Proteção CSRF
+  },
+  // ✅ OPCIONAL: Força nova sessão a cada restart do servidor
+  genid: function(req) {
+    return require('crypto').randomBytes(16).toString('hex');
   }
 }));
-
 const CSV_PRODUCTS = 'products.csv';
 const CSV_USERS = 'users.csv';
 
@@ -56,22 +64,17 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const timestamp = Date.now();
-    const extension = path.extname(file.originalname) || '.jpeg';
-    let nomeFinal = `produto_${timestamp}${extension}`;
+    const extension = path.extname(file.originalname) || '.jpg';
 
-    if (req.body.nomeArquivo) {
-      nomeFinal = req.body.nomeArquivo;
+    // Se vier com ID específico no body, usar o ID
+    if (req.body.produtoId) {
+      const nomeComId = `${req.body.produtoId}${extension}`;
+      cb(null, nomeComId);
+    } else {
+      // Caso contrário, usar timestamp (para arquivos temporários)
+      const nomeTemporario = `temp_${timestamp}${extension}`;
+      cb(null, nomeTemporario);
     }
-
-    console.log('Nome do arquivo:', nomeFinal);
-
-    const caminhoCompleto = path.join(__dirname, 'public', 'imgs', nomeFinal);
-
-    if (fs.existsSync(caminhoCompleto)) {
-      fs.unlinkSync(caminhoCompleto);
-    }
-
-    cb(null, nomeFinal);
   }
 });
 
@@ -100,18 +103,34 @@ let nextId = 1;
 function loadProducts() {
   if (fs.existsSync(CSV_PRODUCTS)) {
     const data = fs.readFileSync(CSV_PRODUCTS, 'utf8').split('\n').filter(Boolean);
-    const header = data[0].split(',');
+    // Pula o cabeçalho
     products = data.slice(1).map(line => {
-      const [id, name, price, img, quantity, features] = line.split(',');
+      // Usar regex para splitar apenas a primeira ocorrência de vírgula para os primeiros 5 campos
+      const parts = line.match(/^([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),(.*)$/);
+      if (!parts) {
+        console.warn('Linha CSV mal formatada, pulando:', line);
+        return null;
+      }
+      const [, id, name, price, img, quantity, featuresString] = parts;
+
+      // ✅ SEMPRE usar "|" como separador
+      let features = [];
+      if (featuresString) {
+        // Converte tanto ";" quanto "|" para "|" (compatibilidade com dados antigos)
+        const normalizedFeatures = featuresString.replace(/;/g, '|');
+        features = normalizedFeatures.split('|').map(f => f.trim()).filter(f => f);
+      }
+
       return {
         id: parseInt(id),
         name,
         price: parseFloat(price),
         img,
         quantity: parseInt(quantity),
-        features: features ? features.split('|') : []
+        features
       };
-    });
+    }).filter(Boolean); // Remove quaisquer linhas nulas de formatação incorreta
+
     if (products.length > 0) {
       nextId = Math.max(...products.map(p => p.id)) + 1;
     }
@@ -130,7 +149,8 @@ function saveProducts() {
       p.price,
       p.img,
       p.quantity,
-      Array.isArray(p.features) ? p.features.join(';') : ''
+      // ✅ SEMPRE usar "|" como separador
+      Array.isArray(p.features) ? p.features.join('|') : ''
     ].join(','));
   }
   fs.writeFileSync(CSV_PRODUCTS, data.join('\n'));
@@ -140,7 +160,7 @@ function saveProducts() {
 function validarNomeProdutoUnico(nome, idExcluir = null) {
   // Normaliza o nome para comparação (remove espaços extras e converte para minúsculas)
   const nomeNormalizado = nome.trim().toLowerCase();
-  
+
   return !products.some(produto => {
     const produtoNomeNormalizado = produto.name.trim().toLowerCase();
     return produtoNomeNormalizado === nomeNormalizado && produto.id !== idExcluir;
@@ -151,7 +171,15 @@ function validarIdUnico(id) {
   return !products.some(produto => produto.id === id);
 }
 
-// ======================= ROTAS API ATUALIZADAS =======================
+// Função para corrigir caminho da imagem
+function corrigirCaminhoImagem(img) {
+  if (!img.startsWith('/public/')) {
+    return '/public/imgs/' + img;
+  }
+  return img;
+}
+
+// ======================= ROTAS API =======================
 
 // Produtos
 app.get('/products', (req, res) => res.json(products));
@@ -163,7 +191,7 @@ app.get('/products/:id', (req, res) => {
 
 app.post('/products', async (req, res) => {
   const { name, price, img, quantity, features, tempFileName } = req.body;
-  
+
   // Validações básicas
   if (!name || !img || price === undefined || quantity === undefined) {
     return res.status(400).json({ message: 'Campos obrigatórios faltando.' });
@@ -171,8 +199,8 @@ app.post('/products', async (req, res) => {
 
   // Validar nome único
   if (!validarNomeProdutoUnico(name)) {
-    return res.status(409).json({ 
-      message: 'Já existe um produto com este nome. Por favor, escolha outro nome.' 
+    return res.status(409).json({
+      message: 'Já existe um produto com este nome. Por favor, escolha outro nome.'
     });
   }
 
@@ -188,20 +216,31 @@ app.post('/products', async (req, res) => {
     return res.status(400).json({ message: 'Quantidade deve ser um número não negativo.' });
   }
 
+  // Criar produto com ID
   const newProduct = {
-    id: nextId++,
+    id: nextId,
     name: name.trim(),
     price: precoNumerico,
-    img: corrigirCaminhoImagem(img),
+    img: '', // Será preenchido depois
     quantity: quantidadeNumerica,
     features: features || []
   };
 
-  products.push(newProduct);
-
+  // Se há arquivo temporário, renomear para usar o ID
+  let finalImg = img;
   if (tempFileName) {
-    // Lógica para renomear arquivo temporário, se necessário
+    const novoNome = renomearArquivoParaId(tempFileName, nextId);
+    if (novoNome) {
+      finalImg = `/public/imgs/${novoNome}`;
+    }
   }
+
+  // Atualizar imagem no produto
+  newProduct.img = finalImg;
+
+  // Adicionar produto e incrementar ID
+  products.push(newProduct);
+  nextId++;
 
   saveProducts();
 
@@ -211,7 +250,7 @@ app.post('/products', async (req, res) => {
 app.put('/products/:id', async (req, res) => {
   const id = parseInt(req.params.id);
   const index = products.findIndex(p => p.id === id);
-  
+
   if (index === -1) {
     return res.status(404).json({ message: 'Produto não encontrado.' });
   }
@@ -225,8 +264,8 @@ app.put('/products/:id', async (req, res) => {
 
   // Validar nome único (excluindo o produto atual)
   if (!validarNomeProdutoUnico(name, id)) {
-    return res.status(409).json({ 
-      message: 'Já existe outro produto com este nome. Por favor, escolha outro nome.' 
+    return res.status(409).json({
+      message: 'Já existe outro produto com este nome. Por favor, escolha outro nome.'
     });
   }
 
@@ -244,18 +283,21 @@ app.put('/products/:id', async (req, res) => {
 
   let finalImg = img;
   if (tempFileName) {
-    // Lógica para renomear arquivo temporário, se necessário
+    const novoNome = renomearArquivoParaId(tempFileName, id);
+    if (novoNome) {
+      finalImg = `/public/imgs/${novoNome}`;
+    }
   }
 
-  products[index] = { 
-    id, 
-    name: name.trim(), 
-    price: precoNumerico, 
-    img: corrigirCaminhoImagem(finalImg), 
-    quantity: quantidadeNumerica, 
-    features 
+  products[index] = {
+    id,
+    name: name.trim(),
+    price: precoNumerico,
+    img: corrigirCaminhoImagem(finalImg),
+    quantity: quantidadeNumerica,
+    features
   };
-  
+
   saveProducts();
   res.json(products[index]);
 });
@@ -263,21 +305,21 @@ app.put('/products/:id', async (req, res) => {
 app.delete('/products/:id', (req, res) => {
   const id = parseInt(req.params.id);
   const index = products.findIndex(p => p.id === id);
-  
+
   if (index === -1) {
-    return res.status(404).json({ 
+    return res.status(404).json({
       message: 'Produto não encontrado.',
-      success: false 
+      success: false
     });
   }
 
   const produtoRemovido = products[index];
   products.splice(index, 1);
   saveProducts();
-  
-  res.json({ 
+
+  res.json({
     message: `Produto "${produtoRemovido.name}" deletado com sucesso!`,
-    success: true 
+    success: true
   });
 });
 
@@ -307,91 +349,97 @@ function saveUsers() {
   fs.writeFileSync(CSV_USERS, data.join('\n'));
 }
 
-// Função para corrigir caminho da imagem
-function corrigirCaminhoImagem(img) {
-  if (!img.startsWith('/public/')) {
-    return '/public/imgs/' + img;
-  }
-  return img;
-}
-
 // Carrega os dados na inicialização
 loadProducts();
 loadUsers();
 setupAutoSave();
 
-// ======================= ROTAS API =======================
-
-// Produtos
-app.get('/products', (req, res) => res.json(products));
-
-app.get('/products/:id', (req, res) => {
-  const product = products.find(p => p.id === parseInt(req.params.id));
-  product ? res.json(product) : res.status(404).json({ message: 'Produto não encontrado' });
-});
-
-app.post('/products', async (req, res) => {
-  const { name, price, img, quantity, features, tempFileName } = req.body;
-  if (!name || !img || price === undefined || quantity === undefined)
-    return res.status(400).json({ message: 'Campos obrigatórios faltando.' });
-
-  const newProduct = {
-    id: nextId++,
-    name,
-    price: parseFloat(price),
-    img: corrigirCaminhoImagem(img),
-    quantity: parseInt(quantity),
-    features: features || []
-  };
-
-  products.push(newProduct);
-
-  if (tempFileName) {
-    // Lógica para renomear arquivo temporário, se necessário
-  }
-
-  saveProducts();
-
-  res.status(201).json(newProduct);
-});
-
-app.put('/products/:id', async (req, res) => {
-  const id = parseInt(req.params.id);
-  const index = products.findIndex(p => p.id === id);
-  if (index === -1)
-    return res.status(404).json({ message: 'Produto não encontrado.' });
-
-  const { name, price, img, quantity, features, tempFileName } = req.body;
-
-  let finalImg = img;
-  if (tempFileName) {
-    // Lógica para renomear arquivo temporário, se necessário
-  }
-
-  products[index] = { id, name, price, img: corrigirCaminhoImagem(finalImg), quantity, features };
-  saveProducts();
-  res.json(products[index]);
-});
-
-app.delete('/products/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  const index = products.findIndex(p => p.id === id);
-  if (index === -1)
-    return res.status(404).json({ message: 'Produto não encontrado.' });
-
-  products.splice(index, 1);
-  saveProducts();
-  res.status(204).send();
-});
-
 // UPLOAD DE IMAGENS
-app.post('/upload-image', upload.single('imagem'), (req, res) => {
+app.post('/upload-image-with-id', upload.single('imagem'), (req, res) => {
   try {
-    res.json({ file: req.file.filename });
+    if (!req.file) {
+      return res.status(400).json({ message: 'Nenhum arquivo enviado.' });
+    }
+
+    const { produtoId } = req.body;
+
+    if (!produtoId) {
+      return res.status(400).json({ message: 'ID do produto é obrigatório.' });
+    }
+
+    // Retorna o nome do arquivo com ID
+    res.json({
+      file: req.file.filename,
+      path: `/public/imgs/${req.file.filename}`,
+      message: 'Upload realizado com sucesso!'
+    });
   } catch (error) {
+    console.error('Erro no upload:', error);
     res.status(500).json({ message: 'Erro ao fazer upload.' });
   }
 });
+
+// ROTA PARA UPLOAD DE IMAGEM TEMPORÁRIA (SEM ID)
+app.post('/upload-image', upload.single('imagem'), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'Nenhum arquivo enviado.' });
+    }
+
+    // Para upload sem ID, criar nome temporário
+    const timestamp = Date.now();
+    const extension = path.extname(req.file.originalname) || '.jpg';
+    const nomeTemporario = `temp_${timestamp}${extension}`;
+
+    // Caminho atual do arquivo
+    const caminhoAtual = req.file.path;
+    const caminhoNovo = path.join(path.dirname(caminhoAtual), nomeTemporario);
+
+    // Renomear o arquivo para nome temporário
+    fs.renameSync(caminhoAtual, caminhoNovo);
+
+    // Retorna o nome do arquivo temporário
+    res.json({
+      file: nomeTemporario,
+      path: `/public/imgs/${nomeTemporario}`,
+      message: 'Upload temporário realizado com sucesso!'
+    });
+  } catch (error) {
+    console.error('Erro no upload temporário:', error);
+    res.status(500).json({ message: 'Erro ao fazer upload temporário.' });
+  }
+});
+
+// 3. FUNÇÃO PARA RENOMEAR ARQUIVO TEMPORÁRIO PARA ID
+function renomearArquivoParaId(nomeTemporario, novoId) {
+  const imgDir = path.join(__dirname, 'public', 'imgs');
+  const caminhoAntigo = path.join(imgDir, nomeTemporario);
+
+  if (!fs.existsSync(caminhoAntigo)) {
+    console.error('Arquivo temporário não encontrado:', caminhoAntigo);
+    return null;
+  }
+
+  // Extrair extensão do arquivo temporário
+  const extensao = path.extname(nomeTemporario);
+  const novoNome = `${novoId}${extensao}`;
+  const caminhoNovo = path.join(imgDir, novoNome);
+
+  try {
+    // Remove arquivo com mesmo ID se existir
+    if (fs.existsSync(caminhoNovo)) {
+      fs.unlinkSync(caminhoNovo);
+    }
+
+    // Renomeia arquivo temporário
+    fs.renameSync(caminhoAntigo, caminhoNovo);
+
+    return novoNome;
+  } catch (error) {
+    console.error('Erro ao renomear arquivo:', error);
+    return null;
+  }
+}
 
 // NOVA ROTA PARA RENOMEAR IMAGEM
 app.post('/rename-image', (req, res) => {
@@ -403,31 +451,99 @@ app.post('/rename-image', (req, res) => {
   }
 });
 
-// Autenticação
+// ======================= ROTAS DE AUTENTICAÇÃO ATUALIZADAS =======================
+
 app.post("/login", (req, res) => {
   const { email, senha } = req.body;
   const user = users.find(u => u.email === email && u.senha === senha);
-  if (!user)
+  
+  if (!user) {
     return res.status(401).json({ message: 'Usuário ou senha inválidos.' });
+  }
 
-  req.session.user = { nome: user.nome, tipo: user.tipo };
-  res.json({ nome: user.nome, tipo: user.tipo });
+  // ✅ LIMPA QUALQUER SESSÃO ANTERIOR
+  req.session.regenerate((err) => {
+    if (err) {
+      console.error('Erro ao regenerar sessão:', err);
+      return res.status(500).json({ message: 'Erro interno do servidor.' });
+    }
+
+    // Define os dados da sessão
+    req.session.user = { 
+      nome: user.nome, 
+      tipo: user.tipo,
+      email: user.email,
+      loginTime: new Date().toISOString() // Para debug
+    };
+
+    // ✅ FORÇA SALVAMENTO DA SESSÃO
+    req.session.save((err) => {
+      if (err) {
+        console.error('Erro ao salvar sessão:', err);
+        return res.status(500).json({ message: 'Erro ao salvar sessão.' });
+      }
+
+      console.log(`✅ Login realizado: ${user.email} - Sessão ID: ${req.sessionID}`);
+      res.json({ nome: user.nome, tipo: user.tipo });
+    });
+  });
 });
 
 app.get("/check-session", (req, res) => {
+  // ✅ VERIFICAÇÃO MAIS ROBUSTA
   if (req.session && req.session.user) {
-    res.json({ logado: true, user: req.session.user });
+    console.log(`✅ Sessão válida: ${req.session.user.email} - ID: ${req.sessionID}`);
+    res.json({ 
+      logado: true, 
+      user: req.session.user,
+      sessionId: req.sessionID // Para debug
+    });
   } else {
+    console.log(`❌ Sessão inválida - ID: ${req.sessionID || 'undefined'}`);
     res.json({ logado: false });
   }
 });
 
 app.post("/logout", (req, res) => {
-  req.session.destroy(err => {
-    if (err) return res.status(500).json({ message: 'Erro ao sair.' });
+  const userEmail = req.session?.user?.email || 'desconhecido';
+  
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Erro ao destruir sessão:', err);
+      return res.status(500).json({ message: 'Erro ao sair.' });
+    }
+
+    // ✅ LIMPA O COOKIE DE SESSÃO
+    res.clearCookie('connect.sid'); // Nome padrão do cookie de sessão
+    
+    console.log(`✅ Logout realizado: ${userEmail}`);
     res.json({ message: 'Logout realizado com sucesso.' });
   });
 });
+
+// ======================= MIDDLEWARE DE VERIFICAÇÃO DE SESSÃO =======================
+
+function verificarSessao(req, res, next) {
+  if (!req.session || !req.session.user) {
+    return res.status(401).json({ message: 'Acesso negado. Faça login primeiro.' });
+  }
+  next();
+}
+
+// ✅ EXEMPLO DE USO DO MIDDLEWARE (adicione às rotas que precisam de autenticação)
+// app.get('/admin/usuarios', verificarSessao, (req, res) => {
+//   res.json(users);
+// });
+
+
+// ======================= LIMPEZA DE SESSÕES ÓRFÃS =======================
+
+setInterval(() => {
+  // Esta função roda automaticamente com express-session
+  // Mas você pode adicionar logs para debug
+  console.log('🧹 Limpeza automática de sessões executada');
+}, 300000); // A cada 1 minuto
+
 
 app.post("/register", (req, res) => {
   const { email, senha, nome } = req.body;
@@ -480,7 +596,7 @@ app.post('/users/import', uploadUsers.single('arquivo'), (req, res) => {
     }
 
     const filePath = req.file.path;
-    
+
     // Verificar se o arquivo existe
     if (!fs.existsSync(filePath)) {
       return res.status(400).json({ message: 'Arquivo não encontrado.' });
@@ -488,7 +604,7 @@ app.post('/users/import', uploadUsers.single('arquivo'), (req, res) => {
 
     // Ler o arquivo CSV
     const data = fs.readFileSync(filePath, 'utf8').split('\n').filter(Boolean);
-    
+
     // Verificar se o arquivo não está vazio
     if (data.length === 0) {
       fs.unlinkSync(filePath); // Limpar arquivo temporário
@@ -499,8 +615,8 @@ app.post('/users/import', uploadUsers.single('arquivo'), (req, res) => {
     const header = data[0].split(',');
     if (header.length < 4 || header[0] !== 'email' || header[1] !== 'senha' || header[2] !== 'nome' || header[3] !== 'tipo') {
       fs.unlinkSync(filePath); // Limpar arquivo temporário
-      return res.status(400).json({ 
-        message: 'CSV inválido. O cabeçalho deve ser: email,senha,nome,tipo' 
+      return res.status(400).json({
+        message: 'CSV inválido. O cabeçalho deve ser: email,senha,nome,tipo'
       });
     }
 
@@ -511,12 +627,12 @@ app.post('/users/import', uploadUsers.single('arquivo'), (req, res) => {
       if (!linha) continue; // Pular linhas vazias
 
       const [email, senha, nome, tipo] = linha.split(',');
-      
+
       // Validar campos obrigatórios
       if (!email || !senha || !nome || !tipo) {
         fs.unlinkSync(filePath);
-        return res.status(400).json({ 
-          message: `Erro na linha ${i + 1}: Todos os campos são obrigatórios (email,senha,nome,tipo)` 
+        return res.status(400).json({
+          message: `Erro na linha ${i + 1}: Todos os campos são obrigatórios (email,senha,nome,tipo)`
         });
       }
 
@@ -543,13 +659,13 @@ app.post('/users/import', uploadUsers.single('arquivo'), (req, res) => {
     // Limpar arquivo temporário
     fs.unlinkSync(filePath);
 
-    res.json({ 
-      message: `CSV importado com sucesso! ${novosUsuarios.length} usuários adicionados.` 
+    res.json({
+      message: `CSV importado com sucesso! ${novosUsuarios.length} usuários adicionados.`
     });
 
   } catch (error) {
     console.error('Erro ao importar CSV:', error);
-    
+
     // Limpar arquivo temporário em caso de erro
     if (req.file && req.file.path && fs.existsSync(req.file.path)) {
       try {
@@ -559,8 +675,8 @@ app.post('/users/import', uploadUsers.single('arquivo'), (req, res) => {
       }
     }
 
-    res.status(500).json({ 
-      message: 'Erro interno do servidor ao processar o arquivo CSV.' 
+    res.status(500).json({
+      message: 'Erro interno do servidor ao processar o arquivo CSV.'
     });
   }
 });
@@ -581,7 +697,6 @@ app.delete('/users/:email', (req, res) => {
 
 app.get('/users', (req, res) => res.json(users));
 
-// ====================== FUNÇÃO PARA LIMPAR ARQUIVOS TEMPORÁRIOS ============================
 function limparArquivosTemporarios() {
   const imgDir = path.join(__dirname, 'public', 'imgs');
 
@@ -589,15 +704,17 @@ function limparArquivosTemporarios() {
 
   const files = fs.readdirSync(imgDir);
   const agora = Date.now();
-  const umDiaEmMs = 24 * 60 * 60 * 1000;
+  const umaHoraEmMs = 60 * 60 * 1000; // 1 hora em vez de 1 dia
 
   files.forEach(file => {
     const filePath = path.join(imgDir, file);
     const stats = fs.statSync(filePath);
 
-    if (agora - stats.mtime.getTime() > umDiaEmMs && file.startsWith('produto_')) {
+    // Limpar apenas arquivos temporários antigos
+    if (agora - stats.mtime.getTime() > umaHoraEmMs && file.startsWith('temp_')) {
       try {
         fs.unlinkSync(filePath);
+        console.log(`Arquivo temporário removido: ${file}`);
       } catch (error) {
         console.error('Erro ao remover arquivo temporário:', error);
       }
@@ -605,7 +722,8 @@ function limparArquivosTemporarios() {
   });
 }
 
-setInterval(limparArquivosTemporarios, 60 * 60 * 1000);
+// Executar limpeza a cada 30 minutos
+setInterval(limparArquivosTemporarios, 30 * 60 * 1000);
 
 limparArquivosTemporarios();
 
